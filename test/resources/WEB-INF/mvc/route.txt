@@ -1,0 +1,4 @@
+
+GET /phone		phone
+GET /home		home
+GET /et 			et

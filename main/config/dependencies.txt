@@ -1,0 +1,11 @@
+
+[provided]
+toolkit @local @snapshot
+freemarker org.freemarker 2.3.28
+javax.servlet-api javax.servlet 3.1.0
+
+[test]
+assertj-core org.assertj 3.10.0
+junit junit 4.7
+mockito-all org.mockito 1.10.19
+
