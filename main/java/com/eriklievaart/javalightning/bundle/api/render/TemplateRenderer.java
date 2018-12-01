@@ -20,11 +20,11 @@ public class TemplateRenderer implements ServletReponseRenderer {
 	@Override
 	public void render(RequestContext context) throws IOException {
 		log.info("rendering template %", resource);
-		InputStream is = context.getServiceCollection(TemplateService.class).withOne(s -> {
+		InputStream is = context.getServiceCollection(TemplateService.class).oneReturns(s -> {
 			return s.render(resource, context.getResponseBuilder().getModel());
 		});
 		context.getResponse().setStatus(context.getResponseBuilder().getView().getStatusCode());
-		context.getResponse().setContentType("text/html");
+		context.getResponseBuilder().getHeaders().forEach((k, v) -> context.getResponse().addHeader(k, v));
 		StreamTool.copyStream(is, context.getResponse().getOutputStream());
 	}
 

@@ -21,6 +21,40 @@ public class ContentServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		invoke(req, res);
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		invoke(req, res);
+	}
+
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		invoke(req, res);
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		invoke(req, res);
+	}
+
+	@Override
+	protected void doHead(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		invoke(req, res);
+	}
+
+	@Override
+	protected void doOptions(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		invoke(req, res);
+	}
+
+	@Override
+	protected void doTrace(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		invoke(req, res);
+	}
+
+	private void invoke(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		log.debug("received request for url %", req.getRequestURL());
 		req.setCharacterEncoding("UTF-8");
 		res.setCharacterEncoding("UTF-8");
@@ -29,5 +63,4 @@ public class ContentServlet extends HttpServlet {
 		String path = req.getRequestURI();
 		new ContentServletCall(beans, req, res).render(method, path);
 	}
-
 }

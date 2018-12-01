@@ -14,6 +14,8 @@ public interface Parameters {
 
 	public abstract String getString(String key);
 
+	public abstract String getString(String key, String fallback);
+
 	public long getInteger(String key) throws ConversionException;
 
 	public long getLong(String key) throws ConversionException;

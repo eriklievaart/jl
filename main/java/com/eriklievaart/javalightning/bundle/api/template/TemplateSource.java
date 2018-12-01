@@ -1,6 +1,8 @@
 package com.eriklievaart.javalightning.bundle.api.template;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public interface TemplateSource {
 
@@ -9,4 +11,8 @@ public interface TemplateSource {
 	public InputStream getTemplate(String path);
 
 	public long getLastModified();
+
+	public default List<TemplateGlobal> getGlobals() {
+		return new ArrayList<>();
+	}
 }

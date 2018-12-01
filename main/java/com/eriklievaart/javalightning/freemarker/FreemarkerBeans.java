@@ -9,11 +9,11 @@ import freemarker.template.Configuration;
 
 public class FreemarkerBeans {
 
-	private TemplateSourceIndex whiteboard = new TemplateSourceIndex();
+	private GlobalsIndex globals = new GlobalsIndex();
+	private TemplateSourceIndex whiteboard = new TemplateSourceIndex(globals);
 	private OsgiTemplateLoader loader = new OsgiTemplateLoader(whiteboard);
 	private FreemarkerConfigurationFactory factory = new FreemarkerConfigurationFactory(loader);
 	private FreemarkerOsgiConfig config = new FreemarkerOsgiConfig(factory, loader);
-	private GlobalsIndex globals = new GlobalsIndex();
 
 	public TemplateSourceIndex getTemplateSourceListener() {
 		return whiteboard;
@@ -35,7 +35,7 @@ public class FreemarkerBeans {
 		return loader;
 	}
 
-	public GlobalsIndex getGlobalsListener() {
+	public GlobalsIndex getGlobalsIndex() {
 		return globals;
 	}
 }

@@ -1,10 +1,9 @@
 package com.eriklievaart.javalightning.bundle.control;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,14 +12,18 @@ import javax.servlet.http.HttpSession;
 import com.eriklievaart.javalightning.bundle.api.Bean;
 import com.eriklievaart.javalightning.bundle.api.Parameters;
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
+import com.eriklievaart.javalightning.bundle.api.osgi.Service;
+import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
+import com.eriklievaart.toolkit.lang.api.FormattedException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
+import com.eriklievaart.toolkit.reflect.api.FieldTool;
 import com.eriklievaart.toolkit.reflect.api.annotations.AnnotatedField;
 import com.eriklievaart.toolkit.reflect.api.annotations.AnnotationTool;
 
 public class InOutJector implements AutoCloseable {
 
-	private Map<Class<?>, Supplier<?>> suppliers = NewCollection.map();
+	private Map<Class<?>, Function<Field, ?>> suppliers = NewCollection.map();
 	private RequestContext context;
 	private List<CloseableSilently> closeables = NewCollection.concurrentList();
 
@@ -30,36 +33,38 @@ public class InOutJector implements AutoCloseable {
 	}
 
 	private void createSuppliers(RequestContext requestContext) {
-		suppliers.put(RequestContext.class, () -> requestContext);
-		suppliers.put(HttpServletRequest.class, () -> requestContext.getRequest());
-		suppliers.put(HttpServletResponse.class, () -> requestContext.getResponse());
-		suppliers.put(HttpSession.class, () -> requestContext.getRequest().getSession());
+		suppliers.put(RequestContext.class, f -> requestContext);
+		suppliers.put(HttpServletRequest.class, f -> requestContext.getRequest());
+		suppliers.put(HttpServletResponse.class, f -> requestContext.getResponse());
+		suppliers.put(HttpSession.class, f -> requestContext.getRequest().getSession());
+		suppliers.put(ServiceCollection.class, this::createServiceCollection);
 		suppliers.put(Parameters.class, this::createParameters);
 	}
 
-	public Parameters createParameters() {
+	@SuppressWarnings("unused")
+	public Parameters createParameters(Field field) {
 		return new ParametersSupplier(context.getRequest(), closeables).get();
 	}
 
+	public ServiceCollection<?> createServiceCollection(Field field) {
+		return context.getServiceCollection(FieldTool.getGenericLiteral(field));
+	}
+
 	public void injectAnnotatedFields(Object instance) {
-		for (AnnotatedField<Bean> field : AnnotationTool.getFieldsAnnotatedWith(instance.getClass(), Bean.class)) {
-			field.inject(instance, createArgument(field.getType()));
+		Class<?> type = instance.getClass();
+		for (AnnotatedField<Bean> field : AnnotationTool.getFieldsAnnotatedWith(type, Bean.class)) {
+			field.inject(instance, createArgument(field.getMember()));
+		}
+		for (AnnotatedField<Service> field : AnnotationTool.getFieldsAnnotatedWith(type, Service.class)) {
+			throw new FormattedException("OSGI: $", field.getMember());
 		}
 	}
 
-	public Object[] createArguments(Method m) {
-		List<Object> parameters = NewCollection.list();
-		for (Parameter parameter : m.getParameters()) {
-			parameters.add(createArgument(parameter.getType()));
-		}
-		return parameters.toArray();
-	}
-
-	private Object createArgument(Class<?> type) {
-		Supplier<?> supplier = suppliers.get(type);
-		Check.notNull(supplier, "Cannot inject type $", type);
-		Object result = supplier.get();
-		Check.isInstance(type, result);
+	private Object createArgument(Field field) {
+		Function<Field, ?> supplier = suppliers.get(field.getType());
+		Check.notNull(supplier, "Cannot inject type $", field.getType());
+		Object result = supplier.apply(field);
+		Check.isInstance(field.getType(), result);
 		return result;
 	}
 

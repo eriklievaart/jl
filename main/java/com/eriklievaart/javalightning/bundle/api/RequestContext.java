@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.osgi.framework.BundleContext;
 
 import com.eriklievaart.javalightning.bundle.api.render.ServletReponseRenderer;
+import com.eriklievaart.javalightning.bundle.route.ContentTypes;
 import com.eriklievaart.osgi.toolkit.api.BundleWrapper;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
 
@@ -44,5 +45,6 @@ public class RequestContext {
 
 	public void reset() {
 		responseBuilder = new ResponseBuilder();
+		responseBuilder.setContentType(ContentTypes.getDefaultContentType(request.getRequestURI()));
 	}
 }

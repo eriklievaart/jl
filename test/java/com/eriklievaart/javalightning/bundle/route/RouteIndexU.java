@@ -61,6 +61,22 @@ public class RouteIndexU {
 	}
 
 	@Test
+	public void resolveEmptyPathAfterServiceNoSlash() throws Exception {
+		RouteIndex index = new RouteIndex();
+
+		DummyPageController controller = new DummyPageController();
+		Route route = new Route("", EnumSet.of(RouteType.GET), () -> controller);
+		index.register(new DummyPageService("service", route));
+
+		Optional<PageController> resolved = index.resolve(RouteType.GET, "/mvc/service");
+		Check.isTrue(resolved.isPresent());
+
+		Check.isFalse(controller.isInvoked());
+		resolved.get().invoke(new ResponseBuilder());
+		Check.isTrue(controller.isInvoked());
+	}
+
+	@Test
 	public void resolveServiceDoesNotExist() {
 		RouteIndex index = new RouteIndex();
 		BombSquad.diffuse(AssertionException.class, "Missing service", () -> {

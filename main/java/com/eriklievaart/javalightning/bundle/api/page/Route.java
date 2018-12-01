@@ -10,6 +10,14 @@ public class Route {
 	private final EnumSet<RouteType> types;
 	private final Supplier<PageController> supplier;
 
+	public Route(String path, Supplier<PageController> supplier) {
+		this(path, RouteType.GET, supplier);
+	}
+
+	public Route(String path, RouteType method, Supplier<PageController> supplier) {
+		this(path, EnumSet.of(method), supplier);
+	}
+
 	public Route(String path, EnumSet<RouteType> types, Supplier<PageController> supplier) {
 		this.path = UrlTool.removeLeadingSlashes(UrlTool.removeTrailingSlash(path));
 		this.types = types;

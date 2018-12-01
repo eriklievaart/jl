@@ -6,4 +6,5 @@ import java.util.Map;
 public interface TemplateService {
 
 	public InputStream render(String view, Map<String, Object> data);
+
 }

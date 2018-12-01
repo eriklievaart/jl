@@ -43,6 +43,7 @@ public class RouteIndex implements SimpleServiceListener<PageService> {
 	public Optional<PageController> resolve(RouteType method, String path) {
 		String skipMvc = UrlTool.getTail(path);
 		String service = UrlTool.removeTrailingSlash(UrlTool.getHead(skipMvc));
+		Check.notNull(service, "requested URL does not start with a service %", path);
 		if (!services.containsKey(service)) {
 			throw new AssertionException("Cannot resolve rout! Missing service % $", service, listServices());
 		}

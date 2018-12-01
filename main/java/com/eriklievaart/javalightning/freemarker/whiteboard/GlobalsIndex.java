@@ -3,11 +3,12 @@ package com.eriklievaart.javalightning.freemarker.whiteboard;
 import java.util.Map;
 
 import com.eriklievaart.javalightning.bundle.api.template.TemplateGlobal;
-import com.eriklievaart.osgi.toolkit.api.listener.SimpleServiceListener;
 import com.eriklievaart.toolkit.lang.api.check.CheckCollection;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
+import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
-public class GlobalsIndex implements SimpleServiceListener<TemplateGlobal> {
+public class GlobalsIndex {
+	private LogTemplate log = new LogTemplate(getClass());
 
 	private Map<String, TemplateGlobal> index = NewCollection.concurrentHashMap();
 
@@ -15,21 +16,25 @@ public class GlobalsIndex implements SimpleServiceListener<TemplateGlobal> {
 		return index.containsKey(id);
 	}
 
+	public boolean contains(String key) {
+		return index.containsKey(key);
+	}
+
 	public Object get(String id) {
 		CheckCollection.isPresent(index, id, "missing global %", id);
 		return index.get(id).getObject();
 	}
 
-	@Override
-	public void register(TemplateGlobal service) {
-		String name = service.getName();
+	public void register(TemplateGlobal global) {
+		String name = global.getName();
 		CheckId.isValid(name);
-		index.put(name, service);
+		CheckCollection.notPresent(index, name, "Duplicate global %", name);
+		log.debug("registering global %", global.getName());
+		index.put(name, global);
 	}
 
-	@Override
-	public void unregistering(TemplateGlobal service) {
-		index.remove(service.getName());
+	public void unregistering(TemplateGlobal global) {
+		log.debug("deleting global %", global.getName());
+		index.remove(global.getName());
 	}
-
 }

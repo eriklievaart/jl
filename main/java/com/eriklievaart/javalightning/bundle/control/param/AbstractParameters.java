@@ -25,6 +25,11 @@ public abstract class AbstractParameters<V> implements Parameters {
 	}
 
 	@Override
+	public String getString(String key, String fallback) {
+		return delegate.containsKey(key) ? getString(key) : fallback;
+	}
+
+	@Override
 	public long getInteger(String key) throws ConversionException {
 		return new IntegerConstructor().createConverter().convertToObject(getString(key));
 	}

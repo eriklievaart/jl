@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import org.junit.Test;
 
+import com.eriklievaart.javalightning.bundle.api.template.TemplateGlobal;
 import com.eriklievaart.toolkit.io.api.StreamTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 
@@ -14,7 +15,7 @@ public class FreemarkerTemplateServiceU {
 		FreemarkerBeans beans = new FreemarkerBeans();
 		FreemarkerTemplateService service = new FreemarkerTemplateService(beans);
 
-		beans.getGlobalsListener().register(new DummyTemplateGlobal("date", "today"));
+		beans.getGlobalsIndex().register(TemplateGlobal.of("date", "today"));
 
 		DummyTemplateSource templates = new DummyTemplateSource("dummy");
 		templates.put("/dummy/template.tpl", "${globals.get('date')}");

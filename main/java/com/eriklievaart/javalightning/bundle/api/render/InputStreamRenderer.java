@@ -1,30 +1,31 @@
 package com.eriklievaart.javalightning.bundle.api.render;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.toolkit.io.api.StreamTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 
-public class StringRenderer implements ServletReponseRenderer {
+public class InputStreamRenderer implements ServletReponseRenderer {
 
-	private String data;
+	private InputStream is;
 
-	public StringRenderer(String data) {
-		Check.notNull(data, "Data cannot be null, use an empty String instead!");
-		this.data = data;
+	public InputStreamRenderer(InputStream is) {
+		Check.notNull(is, "InputStream cannot be null!");
+		this.is = is;
 	}
 
 	@Override
 	public void render(RequestContext context) throws IOException {
 		context.getResponse().setStatus(context.getResponseBuilder().getView().getStatusCode());
 		context.getResponseBuilder().getHeaders().forEach((k, v) -> context.getResponse().addHeader(k, v));
-		StreamTool.writeString(data, context.getResponse().getOutputStream());
+		StreamTool.copyStream(is, context.getResponse().getOutputStream());
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + ":" + data;
+		return getClass().getSimpleName();
 	}
 
 }

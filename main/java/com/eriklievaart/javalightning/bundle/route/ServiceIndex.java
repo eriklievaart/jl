@@ -55,7 +55,6 @@ public class ServiceIndex {
 
 	private String createKey(RouteType method, String path) {
 		Check.notNull(method);
-		Check.notNull(path);
-		return Str.sub("$:$", method, path);
+		return Str.sub("$:$", method, path == null ? "" : path);
 	}
 }

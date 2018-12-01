@@ -20,7 +20,8 @@ public class FreemarkerTemplateService implements TemplateService {
 
 	@Override
 	public InputStream render(String view, Map<String, Object> data) {
-		data.put("globals", beans.getGlobalsListener());
+		data.put("globals", beans.getGlobalsIndex());
+
 		StringWriter writer = new StringWriter();
 		try {
 			Template template = beans.getCachedConfiguration().getTemplate(view);
