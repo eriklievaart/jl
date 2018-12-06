@@ -11,5 +11,4 @@ public class InternalRedirectController implements PageController {
 	public void invoke(ResponseBuilder builder) {
 		throw new InternalRedirectException(new UrlMapping("internal", "/mvc/demo/exact"));
 	}
-
 }

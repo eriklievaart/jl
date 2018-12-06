@@ -18,7 +18,7 @@ public class InputStreamRenderer implements ServletReponseRenderer {
 
 	@Override
 	public void render(RequestContext context) throws IOException {
-		context.getResponse().setStatus(context.getResponseBuilder().getView().getStatusCode());
+		context.getResponse().setStatus(context.getResponseBuilder().getStatusCode());
 		context.getResponseBuilder().getHeaders().forEach((k, v) -> context.getResponse().addHeader(k, v));
 		StreamTool.copyStream(is, context.getResponse().getOutputStream());
 	}
@@ -27,5 +27,4 @@ public class InputStreamRenderer implements ServletReponseRenderer {
 	public String toString() {
 		return getClass().getSimpleName();
 	}
-
 }

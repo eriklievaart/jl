@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import javax.servlet.ServletException;
@@ -20,7 +21,7 @@ import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 import com.eriklievaart.toolkit.lang.api.str.Str;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
-public class ParametersSupplier implements Supplier<Parameters> {
+public class ParametersSupplier implements Supplier<Parameters>, AutoCloseable {
 	private static final String FILENAME_HEADER_ATTRIBUTE = "filename";
 	private static final String CONTENT_TYPE_HEADER = "Content-Type";
 	private static final String CONTENT_DISPOSITION_HEADER = "content-disposition";
@@ -28,15 +29,24 @@ public class ParametersSupplier implements Supplier<Parameters> {
 	private LogTemplate log = new LogTemplate(getClass());
 
 	private final HttpServletRequest request;
-	private final List<CloseableSilently> closeables;
+	private final List<CloseableSilently> closeables = NewCollection.concurrentList();
+	private final AtomicReference<Parameters> reference = new AtomicReference<>();
 
-	public ParametersSupplier(HttpServletRequest request, List<CloseableSilently> closeables) {
+	public ParametersSupplier(HttpServletRequest request) {
 		this.request = request;
-		this.closeables = closeables;
 	}
 
 	@Override
 	public Parameters get() {
+		Parameters cached = reference.get();
+		if (cached != null) {
+			return cached;
+		}
+		reference.set(extract());
+		return get();
+	}
+
+	private Parameters extract() {
 		String contentType = request.getHeader(CONTENT_TYPE_HEADER);
 		log.debug("contentType: $", contentType);
 		if (contentType == null || !contentType.toLowerCase().trim().startsWith("multipart/")) {
@@ -84,5 +94,16 @@ public class ParametersSupplier implements Supplier<Parameters> {
 		Map<String, List<String>> parameters = NewCollection.map();
 		request.getParameterMap().forEach((key, array) -> parameters.put(key, Arrays.asList(array)));
 		return new SingleParameters(parameters);
+	}
+
+	@Override
+	public void close() throws Exception {
+		for (CloseableSilently close : closeables) {
+			try {
+				System.currentTimeMillis(); // dummy statement for check style
+			} finally {
+				close.close();
+			}
+		}
 	}
 }

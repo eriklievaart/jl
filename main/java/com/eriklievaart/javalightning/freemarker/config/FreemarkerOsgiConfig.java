@@ -1,7 +1,7 @@
 package com.eriklievaart.javalightning.freemarker.config;
 
 import com.eriklievaart.javalightning.freemarker.OsgiTemplateLoader;
-import com.eriklievaart.osgi.toolkit.api.BundleWrapper;
+import com.eriklievaart.osgi.toolkit.api.ContextWrapper;
 
 public class FreemarkerOsgiConfig {
 	private static final String TEMPLATE_TIMEOUT_PROPERTY = "com.eriklievaart.javalightning.freemarker.timeout";
@@ -15,7 +15,7 @@ public class FreemarkerOsgiConfig {
 		this.loader = loader;
 	}
 
-	public void config(BundleWrapper wrapper) {
+	public void config(ContextWrapper wrapper) {
 		loader.setTemplatePath(wrapper.getPropertyString(TEMPLATE_PATH_PROPERTY, null));
 		factory.setTimeout(wrapper.getPropertyLong(TEMPLATE_TIMEOUT_PROPERTY, 60 * 1000));
 	}

@@ -20,5 +20,4 @@ public class DummyPageController implements PageController {
 	public boolean isInvoked() {
 		return invoked.get();
 	}
-
 }

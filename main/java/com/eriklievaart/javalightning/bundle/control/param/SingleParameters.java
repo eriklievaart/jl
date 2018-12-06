@@ -39,5 +39,4 @@ public class SingleParameters extends AbstractParameters<List<String>> {
 	public String toString() {
 		return delegate.toString();
 	}
-
 }

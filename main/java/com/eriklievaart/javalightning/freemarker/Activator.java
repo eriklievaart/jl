@@ -11,7 +11,7 @@ public class Activator extends ActivatorWrapper {
 	@Override
 	public void init(BundleContext context) throws Exception {
 		FreemarkerBeans beans = new FreemarkerBeans();
-		beans.getFreemarkerOsgiConfig().config(getBundleWrapper());
+		beans.getFreemarkerOsgiConfig().config(getContextWrapper());
 
 		addWhiteboardWithCleanup(TemplateSource.class, beans.getTemplateSourceListener());
 		addServiceWithCleanup(TemplateService.class, new FreemarkerTemplateService(beans));

@@ -1,7 +1,6 @@
 package com.eriklievaart.javalightning.bundle.control;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -21,11 +20,10 @@ import com.eriklievaart.toolkit.reflect.api.FieldTool;
 import com.eriklievaart.toolkit.reflect.api.annotations.AnnotatedField;
 import com.eriklievaart.toolkit.reflect.api.annotations.AnnotationTool;
 
-public class InOutJector implements AutoCloseable {
+public class InOutJector {
 
 	private Map<Class<?>, Function<Field, ?>> suppliers = NewCollection.map();
 	private RequestContext context;
-	private List<CloseableSilently> closeables = NewCollection.concurrentList();
 
 	public InOutJector(RequestContext context) {
 		this.context = context;
@@ -37,13 +35,8 @@ public class InOutJector implements AutoCloseable {
 		suppliers.put(HttpServletRequest.class, f -> requestContext.getRequest());
 		suppliers.put(HttpServletResponse.class, f -> requestContext.getResponse());
 		suppliers.put(HttpSession.class, f -> requestContext.getRequest().getSession());
+		suppliers.put(Parameters.class, f -> requestContext.getParameterSupplier().get());
 		suppliers.put(ServiceCollection.class, this::createServiceCollection);
-		suppliers.put(Parameters.class, this::createParameters);
-	}
-
-	@SuppressWarnings("unused")
-	public Parameters createParameters(Field field) {
-		return new ParametersSupplier(context.getRequest(), closeables).get();
 	}
 
 	public ServiceCollection<?> createServiceCollection(Field field) {
@@ -62,20 +55,9 @@ public class InOutJector implements AutoCloseable {
 
 	private Object createArgument(Field field) {
 		Function<Field, ?> supplier = suppliers.get(field.getType());
-		Check.notNull(supplier, "Cannot inject type $", field.getType());
+		Check.notNull(supplier, "Cannot inject type $ into $", field.getType(), field.getDeclaringClass());
 		Object result = supplier.apply(field);
 		Check.isInstance(field.getType(), result);
 		return result;
-	}
-
-	@Override
-	public void close() {
-		for (CloseableSilently close : closeables) {
-			try {
-				System.currentTimeMillis(); // dummy statement for check style
-			} finally {
-				close.close();
-			}
-		}
 	}
 }

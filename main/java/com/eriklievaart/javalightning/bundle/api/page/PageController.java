@@ -4,5 +4,5 @@ import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 
 public interface PageController {
 
-	public void invoke(ResponseBuilder builder) throws Exception;
+	public void invoke(ResponseBuilder response) throws Exception;
 }

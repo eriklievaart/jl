@@ -17,7 +17,7 @@ public class StringRenderer implements ServletReponseRenderer {
 
 	@Override
 	public void render(RequestContext context) throws IOException {
-		context.getResponse().setStatus(context.getResponseBuilder().getView().getStatusCode());
+		context.getResponse().setStatus(context.getResponseBuilder().getStatusCode());
 		context.getResponseBuilder().getHeaders().forEach((k, v) -> context.getResponse().addHeader(k, v));
 		StreamTool.writeString(data, context.getResponse().getOutputStream());
 	}
@@ -26,5 +26,4 @@ public class StringRenderer implements ServletReponseRenderer {
 	public String toString() {
 		return getClass().getSimpleName() + ":" + data;
 	}
-
 }

@@ -12,6 +12,7 @@ import com.eriklievaart.javalightning.bundle.api.exception.RedirectException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.javalightning.bundle.control.InOutJector;
+import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
 import com.eriklievaart.toolkit.lang.api.FormattedException;
 import com.eriklievaart.toolkit.lang.api.ThrowableTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;
@@ -34,6 +35,7 @@ public class ContentServletCall {
 
 	public void render(RouteType method, String path) throws IOException {
 		RequestContext context = new RequestContext(beans.getContext(), req, res);
+
 		try {
 			invoke(method, path, context);
 			context.getRenderer().render(context);
@@ -66,16 +68,24 @@ public class ContentServletCall {
 		Optional<PageController> optional = beans.getRouteIndex().resolve(method, path);
 
 		if (optional.isPresent()) {
-			PageController controller = optional.get();
-
-			try (InOutJector ioj = new InOutJector(context)) {
-				ioj.injectAnnotatedFields(controller);
-				controller.invoke(context.getResponseBuilder());
-			}
+			invoke(context, optional.get());
 
 		} else {
 			String message = Str.sub("no controller for uri $:$ $", method, path, beans.getRouteIndex().listServices());
 			throw new FileNotFoundException(message);
+		}
+	}
+
+	private void invoke(RequestContext context, PageController controller) throws Exception {
+		ParametersSupplier parameters = new ParametersSupplier(context.getRequest());
+		context.setParameterSupplier(parameters);
+		try {
+			InOutJector ioj = new InOutJector(context);
+			ioj.injectAnnotatedFields(controller);
+			controller.invoke(context.getResponseBuilder());
+
+		} finally {
+			parameters.close();
 		}
 	}
 }

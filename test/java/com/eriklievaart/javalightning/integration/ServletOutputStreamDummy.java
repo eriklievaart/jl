@@ -28,5 +28,4 @@ public class ServletOutputStreamDummy extends ServletOutputStream {
 	public String getResult() {
 		return buffer.getResult();
 	}
-
 }

@@ -11,5 +11,4 @@ public enum RouteType {
 	public static RouteType parse(String raw) {
 		return valueOf(raw.trim().toUpperCase());
 	}
-
 }

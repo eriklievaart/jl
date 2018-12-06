@@ -2,9 +2,9 @@ package com.eriklievaart.javalightning.bundle.control;
 
 import org.junit.Test;
 
-import com.eriklievaart.javalightning.api.RequestContextBuilder;
 import com.eriklievaart.javalightning.bundle.api.Bean;
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
+import com.eriklievaart.javalightning.mock.api.MockRequestContext;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 
 public class InOutJectorU {
@@ -16,11 +16,8 @@ public class InOutJectorU {
 			private RequestContext context;
 		}
 		Dummy dummy = new Dummy();
-		InOutJector ioj = new InOutJector(new RequestContextBuilder().get());
+		InOutJector ioj = new InOutJector(MockRequestContext.instance());
 		ioj.injectAnnotatedFields(dummy);
 		Check.notNull(dummy.context);
-
-		ioj.close();
 	}
-
 }

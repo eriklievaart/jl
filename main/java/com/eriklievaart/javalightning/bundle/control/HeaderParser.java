@@ -20,5 +20,4 @@ public class HeaderParser {
 		}
 		return result;
 	}
-
 }

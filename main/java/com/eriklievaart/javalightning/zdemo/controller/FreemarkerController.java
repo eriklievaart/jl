@@ -10,8 +10,9 @@ public class FreemarkerController implements PageController {
 
 	@Override
 	public void invoke(ResponseBuilder response) {
-		response.getModel().put("date", new Date());
-		response.getModel().put("partial", "/zdemo/partial.tpl");
-		response.setRenderer(new TemplateRenderer("/zdemo/freemarker.tpl"));
+		TemplateRenderer renderer = new TemplateRenderer("/zdemo/freemarker.tpl");
+		renderer.put("date", new Date());
+		renderer.put("partial", "/zdemo/partial.tpl");
+		response.setRenderer(renderer);
 	}
 }

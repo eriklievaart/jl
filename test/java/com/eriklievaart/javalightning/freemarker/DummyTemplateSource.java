@@ -34,5 +34,4 @@ public class DummyTemplateSource implements TemplateSource {
 	public long getLastModified() {
 		return 0;
 	}
-
 }

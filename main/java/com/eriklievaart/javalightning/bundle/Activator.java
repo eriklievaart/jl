@@ -20,7 +20,7 @@ public class Activator extends ActivatorWrapper {
 
 		addWhiteboardWithCleanup(PageService.class, beans.getRouteIndex());
 
-		String pattern = getBundleWrapper().getPropertyString(SERVLET_PATTERN, "/mvc/*");
+		String pattern = getContextWrapper().getPropertyString(SERVLET_PATTERN, "/mvc/*");
 		Dictionary<String, ?> props = dictionary(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, pattern);
 		addServiceWithCleanup(Servlet.class, new ContentServlet(beans), props);
 	}

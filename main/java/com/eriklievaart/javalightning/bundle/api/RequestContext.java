@@ -1,13 +1,17 @@
 package com.eriklievaart.javalightning.bundle.api;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.framework.BundleContext;
 
 import com.eriklievaart.javalightning.bundle.api.render.ServletReponseRenderer;
+import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
 import com.eriklievaart.javalightning.bundle.route.ContentTypes;
-import com.eriklievaart.osgi.toolkit.api.BundleWrapper;
+import com.eriklievaart.osgi.toolkit.api.ContextWrapper;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
 
 public class RequestContext {
@@ -16,6 +20,7 @@ public class RequestContext {
 	private HttpServletResponse response;
 	private HttpServletRequest request;
 	private BundleContext bundleContext;
+	private AtomicReference<ParametersSupplier> parameterSupplier = new AtomicReference<>();
 
 	public RequestContext(BundleContext ctx, HttpServletRequest req, HttpServletResponse res) {
 		this.bundleContext = ctx;
@@ -23,8 +28,16 @@ public class RequestContext {
 		this.response = res;
 	}
 
+	public void setParameterSupplier(ParametersSupplier supplier) {
+		parameterSupplier.set(supplier);
+	}
+
+	public Supplier<Parameters> getParameterSupplier() {
+		return parameterSupplier.get();
+	}
+
 	public <E> ServiceCollection<E> getServiceCollection(Class<E> type) {
-		return new BundleWrapper(bundleContext).getServiceCollection(type);
+		return new ContextWrapper(bundleContext).getServiceCollection(type);
 	}
 
 	public HttpServletResponse getResponse() {

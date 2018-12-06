@@ -70,5 +70,4 @@ public class OsgiTemplateLoader implements TemplateLoader {
 	@Override
 	public void closeTemplateSource(Object templateSource) throws IOException {
 	}
-
 }

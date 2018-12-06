@@ -27,5 +27,4 @@ public class DownloadRenderer implements ServletReponseRenderer {
 		context.getResponse().setHeader("Content-Disposition", "attachment; filename=\"" + download.getName() + "\"");
 		StreamTool.copyStream(new FileInputStream(download.getFile()), context.getResponse().getOutputStream());
 	}
-
 }

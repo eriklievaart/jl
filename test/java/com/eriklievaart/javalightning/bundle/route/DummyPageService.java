@@ -28,5 +28,4 @@ public class DummyPageService implements PageService {
 	public Route[] getRoutes() {
 		return routes.toArray(new Route[] {});
 	}
-
 }

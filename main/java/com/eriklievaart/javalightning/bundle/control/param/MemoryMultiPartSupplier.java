@@ -51,5 +51,4 @@ public class MemoryMultiPartSupplier implements MultiPartParameter {
 	@Override
 	public void close() {
 	}
-
 }

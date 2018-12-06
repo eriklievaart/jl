@@ -20,5 +20,4 @@ public class MvcBeans {
 	public RouteIndex getRouteIndex() {
 		return routes;
 	}
-
 }

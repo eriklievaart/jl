@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import org.junit.Test;
 
 import com.eriklievaart.javalightning.bundle.api.template.TemplateGlobal;
+import com.eriklievaart.javalightning.mock.api.MockRequestContext;
 import com.eriklievaart.toolkit.io.api.StreamTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 
@@ -21,7 +22,8 @@ public class FreemarkerTemplateServiceU {
 		templates.put("/dummy/template.tpl", "${globals.get('date')}");
 		beans.getTemplateSourceListener().register(templates);
 
-		String result = StreamTool.toString(service.render("/dummy/template.tpl", new Hashtable<>()));
+		MockRequestContext context = MockRequestContext.instance();
+		String result = StreamTool.toString(service.render("/dummy/template.tpl", new Hashtable<>(), context));
 		Check.isEqual(result, "today");
 	}
 }

@@ -11,5 +11,4 @@ public class ExternalRedirectController implements PageController {
 	public void invoke(ResponseBuilder builder) {
 		throw new ExternalRedirectException(new UrlMapping("github", "http://www.github.com"));
 	}
-
 }

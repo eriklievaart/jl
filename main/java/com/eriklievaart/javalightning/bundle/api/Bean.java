@@ -12,5 +12,4 @@ import java.lang.annotation.Target;
 public @interface Bean {
 
 	boolean optional() default false;
-
 }

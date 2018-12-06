@@ -41,5 +41,4 @@ public class MultiParameters extends AbstractParameters<MultiPartParameter> {
 	public MultiPartParameter getMultiPart(String key) throws IOException {
 		return delegate.get(key);
 	}
-
 }

@@ -2,17 +2,13 @@ package com.eriklievaart.javalightning.bundle.route;
 
 import java.util.EnumSet;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import com.eriklievaart.javalightning.api.RequestContextBuilder;
 import com.eriklievaart.javalightning.bundle.ContentServletCall;
 import com.eriklievaart.javalightning.bundle.MvcBeans;
-import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 import com.eriklievaart.javalightning.bundle.api.UrlMapping;
 import com.eriklievaart.javalightning.bundle.api.exception.ExternalRedirectException;
@@ -20,6 +16,9 @@ import com.eriklievaart.javalightning.bundle.api.exception.InternalRedirectExcep
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.page.Route;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
+import com.eriklievaart.javalightning.mock.api.MockHttpServletRequest;
+import com.eriklievaart.javalightning.mock.api.MockHttpServletResponse;
+import com.eriklievaart.javalightning.mock.api.MockRequestContext;
 import com.eriklievaart.toolkit.lang.api.FormattedException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.test.api.BombSquad;
@@ -35,17 +34,16 @@ public class ContentServletCallU {
 		Route route = new Route("/bar/", EnumSet.of(RouteType.GET), () -> controller);
 		beans.getRouteIndex().register(new DummyPageService("foo", route));
 
-		invocation.invoke(RouteType.GET, "/mvc/foo/bar", new RequestContextBuilder().get());
+		invocation.invoke(RouteType.GET, "/mvc/foo/bar", MockRequestContext.instance());
 		Check.isTrue(controller.isInvoked());
 	}
 
 	@Test
 	public void invokePageControllerInternalRedirect() throws Exception {
 		MvcBeans beans = new MvcBeans();
-		HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-		HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
+		HttpServletRequest req = new MockHttpServletRequest();
+		HttpServletResponse res = new MockHttpServletResponse();
 		ContentServletCall invocation = new ContentServletCall(beans, req, res);
-		Mockito.when(res.getOutputStream()).thenReturn(Mockito.mock(ServletOutputStream.class));
 
 		DummyPageController destination = new DummyPageController();
 		PageController redirect = new PageController() {
@@ -65,8 +63,8 @@ public class ContentServletCallU {
 	@Test
 	public void invokePageControllerExternalRedirect() throws Exception {
 		MvcBeans beans = new MvcBeans();
-		RequestContext context = new RequestContextBuilder().get();
-		ContentServletCall invocation = new ContentServletCall(beans, context.getRequest(), context.getResponse());
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		ContentServletCall invocation = new ContentServletCall(beans, new MockHttpServletRequest(), response);
 
 		PageController controller = new PageController() {
 			@Override
@@ -78,13 +76,13 @@ public class ContentServletCallU {
 		beans.getRouteIndex().register(new DummyPageService("foo", route));
 
 		invocation.render(RouteType.GET, "/mvc/foo/bar");
-		Mockito.verify(context.getResponse()).sendRedirect("http://example.com");
+		response.checkIsRedirectedTo("http://example.com");
 	}
 
 	@Test
 	public void invokeMissingPageController() throws Exception {
 		MvcBeans beans = new MvcBeans();
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+		HttpServletRequest request = new MockHttpServletRequest();
 		ContentServletCall invocation = new ContentServletCall(beans, request, null);
 
 		BombSquad.diffuse(FormattedException.class, "Missing service", () -> {

@@ -18,5 +18,4 @@ org.apache.felix.framework org.apache.felix 5.6.10
 toolkit-test @local @snapshot
 assertj-core org.assertj 3.10.0
 junit junit 4.7
-mockito-all org.mockito 1.10.19
 

@@ -7,5 +7,4 @@ import com.eriklievaart.javalightning.bundle.api.RequestContext;
 public interface ServletReponseRenderer {
 
 	public void render(RequestContext context) throws IOException;
-
 }
