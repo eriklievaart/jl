@@ -16,7 +16,7 @@ import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
 
 public class RequestContext {
 
-	private ResponseBuilder responseBuilder = new ResponseBuilder();
+	private ResponseBuilder responseBuilder;
 	private HttpServletResponse response;
 	private HttpServletRequest request;
 	private BundleContext bundleContext;
@@ -26,6 +26,7 @@ public class RequestContext {
 		this.bundleContext = ctx;
 		this.request = req;
 		this.response = res;
+		reset();
 	}
 
 	public void setParameterSupplier(ParametersSupplier supplier) {

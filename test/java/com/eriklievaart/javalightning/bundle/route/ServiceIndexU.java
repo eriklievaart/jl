@@ -1,38 +1,42 @@
 package com.eriklievaart.javalightning.bundle.route;
 
-import java.util.EnumSet;
-import java.util.Optional;
-
 import org.junit.Test;
 
-import com.eriklievaart.javalightning.bundle.api.page.PageController;
-import com.eriklievaart.javalightning.bundle.api.page.Route;
+import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 
 public class ServiceIndexU {
 
 	@Test
-	public void resolveNoMatch() {
-		Route route = new Route("bar/exact", EnumSet.of(RouteType.GET), () -> new DummyPageController());
-		ServiceIndex index = new ServiceIndex(new DummyPageService("foo", route));
-		Optional<PageController> optional = index.resolve(RouteType.GET, "bar/elsewhere");
-		Check.isFalse(optional.isPresent());
+	public void resolveExactMatch() {
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("exact").map("bar/exact", RouteType.GET, () -> new DummyPageController());
+		ServiceIndex index = new ServiceIndex(routes.createPageService("foo"));
+		Check.isTrue(index.resolve(RouteType.GET, "bar/exact").isPresent());
 	}
 
 	@Test
-	public void resolveExactMatch() {
-		Route route = new Route("bar/exact", EnumSet.of(RouteType.GET), () -> new DummyPageController());
-		ServiceIndex index = new ServiceIndex(new DummyPageService("foo", route));
-		Optional<PageController> optional = index.resolve(RouteType.GET, "bar/exact");
-		Check.isTrue(optional.isPresent());
+	public void resolveNoMatch() {
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("exact").map("bar/exact", RouteType.GET, () -> new DummyPageController());
+		ServiceIndex index = new ServiceIndex(routes.createPageService("service"));
+		Check.isFalse(index.resolve(RouteType.GET, "bar/elsewhere").isPresent());
 	}
 
 	@Test
 	public void resolveWildcardMatch() {
-		Route route = new Route("bar/*", EnumSet.of(RouteType.GET), () -> new DummyPageController());
-		ServiceIndex index = new ServiceIndex(new DummyPageService("foo", route));
-		Optional<PageController> optional = index.resolve(RouteType.GET, "bar/elsewhere");
-		Check.isTrue(optional.isPresent());
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("wildcard").map("bar/*", RouteType.GET, () -> new DummyPageController());
+		ServiceIndex index = new ServiceIndex(routes.createPageService("foo"));
+		Check.isTrue(index.resolve(RouteType.GET, "bar/elsewhere").isPresent());
+	}
+
+	@Test
+	public void resolveWildcardNull() {
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("wildcard").map("*", RouteType.GET, () -> new DummyPageController());
+		ServiceIndex index = new ServiceIndex(routes.createPageService("foo"));
+		Check.isTrue(index.resolve(RouteType.GET, null).isPresent());
 	}
 }

@@ -3,33 +3,31 @@ package com.eriklievaart.javalightning.bundle.api.page;
 import java.util.EnumSet;
 import java.util.function.Supplier;
 
-import com.eriklievaart.toolkit.io.api.UrlTool;
+import com.eriklievaart.toolkit.lang.api.check.Check;
 
 public class Route {
-	private final String path;
-	private final EnumSet<RouteType> types;
+	private String id;
+	private RouteAddress address;
 	private final Supplier<PageController> supplier;
 
-	public Route(String path, Supplier<PageController> supplier) {
-		this(path, RouteType.GET, supplier);
-	}
-
-	public Route(String path, RouteType method, Supplier<PageController> supplier) {
-		this(path, EnumSet.of(method), supplier);
-	}
-
-	public Route(String path, EnumSet<RouteType> types, Supplier<PageController> supplier) {
-		this.path = UrlTool.removeLeadingSlashes(UrlTool.removeTrailingSlash(path));
-		this.types = types;
+	public Route(String id, RouteAddress address, Supplier<PageController> supplier) {
+		Check.notNull(id, address, supplier);
+		Check.matches(id, "[a-z0-9.]++");
+		this.id = id;
+		this.address = address;
 		this.supplier = supplier;
 	}
 
-	public String getPath() {
-		return path;
+	public String getId() {
+		return id;
 	}
 
 	public EnumSet<RouteType> getTypes() {
-		return types;
+		return address.getTypes();
+	}
+
+	public String getPath() {
+		return address.getPath();
 	}
 
 	public PageController createController() {

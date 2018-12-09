@@ -6,8 +6,9 @@ import java.util.Optional;
 import org.junit.Test;
 
 import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
+import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
-import com.eriklievaart.javalightning.bundle.api.page.Route;
+import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.toolkit.lang.api.AssertionException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
@@ -16,15 +17,67 @@ import com.eriklievaart.toolkit.test.api.BombSquad;
 public class RouteIndexU {
 
 	@Test
+	public void getRemotePathDefault() throws Exception {
+		RouteIndex index = new RouteIndex();
+
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
+		index.register(routes.createPageService("service"));
+
+		String path = index.getRemotePath("service", "suffix");
+		Check.isEqual(path, "/service/suffix");
+	}
+
+	@Test
+	public void getRemotePathWithPrefix() throws Exception {
+		RouteIndex index = new RouteIndex();
+		index.setServletPrefix("mvc");
+
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
+		index.register(routes.createPageService("service"));
+
+		String path = index.getRemotePath("service", "suffix");
+		Check.isEqual(path, "/mvc/service/suffix");
+	}
+
+	@Test
+	public void getPathMissingService() throws Exception {
+		RouteIndex index = new RouteIndex();
+
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
+		index.register(routes.createPageService("service"));
+
+		BombSquad.diffuse(RouteUnavailableException.class, "Missing service `idonotexist`", () -> {
+			index.getRemotePath("idonotexist", "suffix");
+		});
+	}
+
+	@Test
+	public void getPathMissingRoute() throws Exception {
+		RouteIndex index = new RouteIndex();
+
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
+		index.register(routes.createPageService("service"));
+
+		BombSquad.diffuse(RouteUnavailableException.class, "No route with id `idonotexist`", () -> {
+			index.getRemotePath("service", "idonotexist");
+		});
+	}
+
+	@Test
 	public void registerInvalidPrefix() {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("suffix", EnumSet.of(RouteType.GET), () -> controller);
-		index.register(new DummyPageService("/service", route));
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> controller);
+		index.register(routes.createPageService("/service"));
 
 		BombSquad.diffuse(AssertionException.class, "Missing service", () -> {
-			index.resolve(RouteType.GET, "/mvc/service/suffix/");
+			index.resolve(RouteType.GET, "/service/suffix/");
 		});
 	}
 
@@ -33,10 +86,11 @@ public class RouteIndexU {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("suffix", EnumSet.of(RouteType.GET), () -> controller);
-		index.register(new DummyPageService("service", route));
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> controller);
+		index.register(routes.createPageService("service"));
 
-		Optional<PageController> resolved = index.resolve(RouteType.GET, "/mvc/service/suffix/");
+		Optional<PageController> resolved = index.resolve(RouteType.GET, "/service/suffix/");
 		Check.isTrue(resolved.isPresent());
 
 		Check.isFalse(controller.isInvoked());
@@ -49,10 +103,11 @@ public class RouteIndexU {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("", EnumSet.of(RouteType.GET), () -> controller);
-		index.register(new DummyPageService("service", route));
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("empty").map("", RouteType.GET, () -> controller);
+		index.register(routes.createPageService("service"));
 
-		Optional<PageController> resolved = index.resolve(RouteType.GET, "/mvc/service/");
+		Optional<PageController> resolved = index.resolve(RouteType.GET, "/service/");
 		Check.isTrue(resolved.isPresent());
 
 		Check.isFalse(controller.isInvoked());
@@ -65,10 +120,12 @@ public class RouteIndexU {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("", EnumSet.of(RouteType.GET), () -> controller);
-		index.register(new DummyPageService("service", route));
 
-		Optional<PageController> resolved = index.resolve(RouteType.GET, "/mvc/service");
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("empty").map("", RouteType.GET, () -> controller);
+		index.register(routes.createPageService("service"));
+
+		Optional<PageController> resolved = index.resolve(RouteType.GET, "/service");
 		Check.isTrue(resolved.isPresent());
 
 		Check.isFalse(controller.isInvoked());
@@ -80,7 +137,7 @@ public class RouteIndexU {
 	public void resolveServiceDoesNotExist() {
 		RouteIndex index = new RouteIndex();
 		BombSquad.diffuse(AssertionException.class, "Missing service", () -> {
-			index.resolve(RouteType.GET, "/mvc/service/");
+			index.resolve(RouteType.GET, "/service/");
 		});
 	}
 
@@ -89,10 +146,11 @@ public class RouteIndexU {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("suffix", EnumSet.of(RouteType.GET), () -> controller);
-		index.register(new DummyPageService("service", route));
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("suffix", RouteType.GET, () -> controller);
+		index.register(routes.createPageService("service"));
 
-		Optional<PageController> resolved = index.resolve(RouteType.GET, "/mvc/service/other/");
+		Optional<PageController> resolved = index.resolve(RouteType.GET, "/service/other/");
 		Check.isFalse(resolved.isPresent());
 	}
 
@@ -101,10 +159,12 @@ public class RouteIndexU {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("path/*", EnumSet.of(RouteType.GET), () -> controller);
-		index.register(new DummyPageService("wildcard", route));
 
-		Optional<PageController> resolved = index.resolve(RouteType.GET, "/mvc/wildcard/path/foo");
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("star").map("path/*", RouteType.GET, () -> controller);
+		index.register(routes.createPageService("wildcard"));
+
+		Optional<PageController> resolved = index.resolve(RouteType.GET, "/wildcard/path/foo");
 		Check.isTrue(resolved.isPresent());
 
 		Check.isFalse(controller.isInvoked());
@@ -117,10 +177,12 @@ public class RouteIndexU {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("suffix", EnumSet.of(RouteType.POST), () -> controller);
-		index.register(new DummyPageService("service", route));
 
-		Optional<PageController> resolved = index.resolve(RouteType.POST, "/mvc/service/suffix/");
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("suffix", RouteType.POST, () -> controller);
+		index.register(routes.createPageService("service"));
+
+		Optional<PageController> resolved = index.resolve(RouteType.POST, "/service/suffix/");
 		Check.isTrue(resolved.isPresent());
 	}
 
@@ -129,10 +191,11 @@ public class RouteIndexU {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("suffix", EnumSet.of(RouteType.POST), () -> controller);
-		index.register(new DummyPageService("service", route));
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("suffix", RouteType.POST, () -> controller);
+		index.register(routes.createPageService("service"));
 
-		Optional<PageController> resolved = index.resolve(RouteType.GET, "/mvc/service/suffix/");
+		Optional<PageController> resolved = index.resolve(RouteType.GET, "/service/suffix/");
 		Check.isFalse(resolved.isPresent());
 	}
 
@@ -141,10 +204,12 @@ public class RouteIndexU {
 		RouteIndex index = new RouteIndex();
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("suffix", EnumSet.of(RouteType.POST, RouteType.GET), () -> controller);
-		index.register(new DummyPageService("service", route));
 
-		Optional<PageController> resolved = index.resolve(RouteType.GET, "/mvc/service/suffix/");
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("suffix").map("suffix", EnumSet.of(RouteType.POST, RouteType.GET), () -> controller);
+		index.register(routes.createPageService("service"));
+
+		Optional<PageController> resolved = index.resolve(RouteType.GET, "/service/suffix/");
 		Check.isTrue(resolved.isPresent());
 	}
 }

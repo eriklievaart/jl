@@ -50,7 +50,7 @@ public class ContentServletCall {
 
 		if (root instanceof RedirectException) {
 			RedirectException redirect = (RedirectException) root;
-			String url = redirect.getRedirectUrl();
+			String url = redirect.getRedirect();
 
 			if (redirect.isInternal()) {
 				log.debug("internal redirect % to %", original, url);

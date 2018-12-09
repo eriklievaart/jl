@@ -1,9 +1,9 @@
 package com.eriklievaart.javalightning.bundle.api.osgi;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import com.eriklievaart.javalightning.bundle.api.page.PageService;
-import com.eriklievaart.javalightning.bundle.api.page.Route;
+import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.template.ClasspathTemplateSource;
 import com.eriklievaart.javalightning.bundle.api.template.TemplateGlobal;
 import com.eriklievaart.javalightning.bundle.api.template.TemplateSource;
@@ -31,21 +31,9 @@ public abstract class LightningActivator extends ActivatorWrapper {
 		addServiceWithCleanup(TemplateSource.class, source);
 	}
 
-	public void addPageService(List<Route> routes) {
-		addPageService(routes.toArray(new Route[] {}));
-	}
-
-	public void addPageService(Route... routes) {
-		addServiceWithCleanup(PageService.class, new PageService() {
-			@Override
-			public String getPrefix() {
-				return name;
-			}
-
-			@Override
-			public Route[] getRoutes() {
-				return routes;
-			}
-		});
+	public void addPageService(Consumer<PageServiceBuilder> consumer) {
+		PageServiceBuilder builder = new PageServiceBuilder();
+		consumer.accept(builder);
+		addServiceWithCleanup(PageService.class, builder.createPageService(name));
 	}
 }

@@ -1,7 +1,5 @@
 package com.eriklievaart.javalightning.bundle.route;
 
-import java.util.EnumSet;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,11 +8,10 @@ import org.junit.Test;
 import com.eriklievaart.javalightning.bundle.ContentServletCall;
 import com.eriklievaart.javalightning.bundle.MvcBeans;
 import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
-import com.eriklievaart.javalightning.bundle.api.UrlMapping;
 import com.eriklievaart.javalightning.bundle.api.exception.ExternalRedirectException;
 import com.eriklievaart.javalightning.bundle.api.exception.InternalRedirectException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
-import com.eriklievaart.javalightning.bundle.api.page.Route;
+import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.javalightning.mock.api.MockHttpServletRequest;
 import com.eriklievaart.javalightning.mock.api.MockHttpServletResponse;
@@ -28,11 +25,13 @@ public class ContentServletCallU {
 	@Test
 	public void invokePageController() throws Exception {
 		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
 		ContentServletCall invocation = new ContentServletCall(beans, null, null);
 
 		DummyPageController controller = new DummyPageController();
-		Route route = new Route("/bar/", EnumSet.of(RouteType.GET), () -> controller);
-		beans.getRouteIndex().register(new DummyPageService("foo", route));
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("bar").mapGet("/bar/", () -> controller);
+		beans.getRouteIndex().register(routes.createPageService("foo"));
 
 		invocation.invoke(RouteType.GET, "/mvc/foo/bar", MockRequestContext.instance());
 		Check.isTrue(controller.isInvoked());
@@ -41,6 +40,7 @@ public class ContentServletCallU {
 	@Test
 	public void invokePageControllerInternalRedirect() throws Exception {
 		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
 		HttpServletRequest req = new MockHttpServletRequest();
 		HttpServletResponse res = new MockHttpServletResponse();
 		ContentServletCall invocation = new ContentServletCall(beans, req, res);
@@ -49,12 +49,13 @@ public class ContentServletCallU {
 		PageController redirect = new PageController() {
 			@Override
 			public void invoke(ResponseBuilder builder) {
-				throw new InternalRedirectException(new UrlMapping("redirect", "/mvc/service/destination"));
+				throw new InternalRedirectException("/mvc/service/destination");
 			}
 		};
-		Route redirectRoute = new Route("/internal/", EnumSet.of(RouteType.GET), () -> redirect);
-		Route destinationRoute = new Route("/destination/", EnumSet.of(RouteType.GET), () -> destination);
-		beans.getRouteIndex().register(new DummyPageService("service", redirectRoute, destinationRoute));
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("internal").mapGet("/internal/", () -> redirect);
+		routes.newRoute("destination").mapGet("/destination/", () -> destination);
+		beans.getRouteIndex().register(routes.createPageService("service"));
 
 		invocation.render(RouteType.GET, "/mvc/service/internal");
 		Check.isTrue(destination.isInvoked());
@@ -63,17 +64,20 @@ public class ContentServletCallU {
 	@Test
 	public void invokePageControllerExternalRedirect() throws Exception {
 		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		ContentServletCall invocation = new ContentServletCall(beans, new MockHttpServletRequest(), response);
 
 		PageController controller = new PageController() {
 			@Override
 			public void invoke(ResponseBuilder builder) {
-				throw new ExternalRedirectException(new UrlMapping("redirect", "http://example.com"));
+				throw new ExternalRedirectException("http://example.com");
 			}
 		};
-		Route route = new Route("/bar/", EnumSet.of(RouteType.GET), () -> controller);
-		beans.getRouteIndex().register(new DummyPageService("foo", route));
+
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("bar").mapGet("/bar/", () -> controller);
+		beans.getRouteIndex().register(routes.createPageService("foo"));
 
 		invocation.render(RouteType.GET, "/mvc/foo/bar");
 		response.checkIsRedirectedTo("http://example.com");
@@ -82,6 +86,7 @@ public class ContentServletCallU {
 	@Test
 	public void invokeMissingPageController() throws Exception {
 		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
 		HttpServletRequest request = new MockHttpServletRequest();
 		ContentServletCall invocation = new ContentServletCall(beans, request, null);
 

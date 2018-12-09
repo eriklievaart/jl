@@ -14,9 +14,11 @@ public class ContentServlet extends HttpServlet {
 	private LogTemplate log = new LogTemplate(getClass());
 
 	private MvcBeans beans;
+	private final String home;
 
-	public ContentServlet(MvcBeans beans) {
+	public ContentServlet(MvcBeans beans, String home) {
 		this.beans = beans;
+		this.home = home;
 	}
 
 	@Override
@@ -61,6 +63,11 @@ public class ContentServlet extends HttpServlet {
 
 		RouteType method = RouteType.parse(req.getMethod());
 		String path = req.getRequestURI();
-		new ContentServletCall(beans, req, res).render(method, path);
+
+		if (method == RouteType.GET && path.matches("^/*+$")) {
+			new ContentServletCall(beans, req, res).render(method, home);
+		} else {
+			new ContentServletCall(beans, req, res).render(method, path);
+		}
 	}
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.template.TemplateService;
 import com.eriklievaart.javalightning.freemarker.model.FreemarkerParameters;
+import com.eriklievaart.javalightning.freemarker.model.Lightning;
 import com.eriklievaart.toolkit.io.api.StreamTool;
 import com.eriklievaart.toolkit.lang.api.FormattedException;
 
@@ -24,6 +25,7 @@ public class FreemarkerTemplateService implements TemplateService {
 	public InputStream render(String view, Map<String, Object> data, RequestContext context) {
 		data.put("globals", beans.getGlobalsIndex());
 		data.put("parameter", new FreemarkerParameters(context.getParameterSupplier()));
+		data.put("lightning", new Lightning(context));
 		StringWriter writer = new StringWriter();
 		try {
 			Template template = beans.getCachedConfiguration().getTemplate(view);

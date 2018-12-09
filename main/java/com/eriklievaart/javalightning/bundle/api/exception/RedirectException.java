@@ -1,15 +1,13 @@
 package com.eriklievaart.javalightning.bundle.api.exception;
 
-import com.eriklievaart.javalightning.bundle.api.UrlMapping;
-
 public class RedirectException extends RuntimeException {
 	static final boolean EXTERNAL = false;
 	static final boolean INTERNAL = true;
 
 	private final boolean internal;
-	private final UrlMapping redirect;
+	private final String redirect;
 
-	protected RedirectException(boolean internal, UrlMapping redirect) {
+	protected RedirectException(boolean internal, String redirect) {
 		this.internal = internal;
 		this.redirect = redirect;
 	}
@@ -18,11 +16,7 @@ public class RedirectException extends RuntimeException {
 		return internal;
 	}
 
-	public UrlMapping getRedirect() {
+	public String getRedirect() {
 		return redirect;
-	}
-
-	public String getRedirectUrl() {
-		return redirect.getUrl();
 	}
 }

@@ -13,7 +13,11 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
+import com.eriklievaart.toolkit.io.api.UrlTool;
+
 public class MockHttpServletRequest extends MockServletRequest implements HttpServletRequest {
+
+	private String url = "https://www.example.com/path";
 
 	@Override
 	public boolean authenticate(HttpServletResponse arg0) throws IOException, ServletException {
@@ -102,12 +106,12 @@ public class MockHttpServletRequest extends MockServletRequest implements HttpSe
 
 	@Override
 	public String getRequestURI() {
-		return null;
+		return UrlTool.getPath(url);
 	}
 
 	@Override
 	public StringBuffer getRequestURL() {
-		return null;
+		return new StringBuffer(url);
 	}
 
 	@Override
