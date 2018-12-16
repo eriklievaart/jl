@@ -13,6 +13,8 @@ import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.javalightning.bundle.control.InOutJector;
 import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
+import com.eriklievaart.javalightning.bundle.route.RouteNotAccessibleException;
+import com.eriklievaart.javalightning.bundle.route.SecureRoute;
 import com.eriklievaart.toolkit.lang.api.FormattedException;
 import com.eriklievaart.toolkit.lang.api.ThrowableTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;
@@ -48,31 +50,43 @@ public class ContentServletCall {
 	private void handleException(String original, Exception e) throws IOException {
 		Throwable root = ThrowableTool.getRootCause(e);
 
+		if (root instanceof RouteNotAccessibleException) {
+			log.debug("access denied for % on %", req.getRemoteHost(), req.getRequestURL());
+			res.setStatus(404);
+			return;
+		}
 		if (root instanceof RedirectException) {
-			RedirectException redirect = (RedirectException) root;
-			String url = redirect.getRedirect();
-
-			if (redirect.isInternal()) {
-				log.debug("internal redirect % to %", original, url);
-				render(RouteType.GET, url);
-			} else {
-				log.debug("external redirect % to %", original, url);
-				res.sendRedirect(url);
-			}
+			redirect(original, (RedirectException) root);
 			return;
 		}
 		throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
 	}
 
-	public void invoke(RouteType method, String path, RequestContext context) throws Exception {
-		Optional<PageController> optional = beans.getRouteIndex().resolve(method, path);
+	private void redirect(String original, RedirectException redirect) throws IOException {
+		String url = redirect.getRedirect();
 
-		if (optional.isPresent()) {
-			invoke(context, optional.get());
-
+		if (redirect.isInternal()) {
+			log.debug("internal redirect % to %", original, url);
+			render(RouteType.GET, url);
 		} else {
+			log.debug("external redirect % to %", original, url);
+			res.sendRedirect(url);
+		}
+	}
+
+	public void invoke(RouteType method, String path, RequestContext context) throws Exception {
+		Optional<SecureRoute> optional = beans.getRouteIndex().resolve(method, path);
+		if (!optional.isPresent()) {
 			String message = Str.sub("no controller for uri $:$ $", method, path, beans.getRouteIndex().listServices());
 			throw new FileNotFoundException(message);
+		}
+
+		SecureRoute route = optional.get();
+		if (!route.isAccessible(context)) {
+			throw new RouteNotAccessibleException();
+
+		} else {
+			invoke(context, route.getController(context));
 		}
 	}
 

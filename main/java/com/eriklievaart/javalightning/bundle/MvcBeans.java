@@ -3,12 +3,12 @@ package com.eriklievaart.javalightning.bundle;
 import org.osgi.framework.BundleContext;
 
 import com.eriklievaart.javalightning.bundle.api.page.RouteService;
-import com.eriklievaart.javalightning.bundle.route.RouteIndex;
+import com.eriklievaart.javalightning.bundle.route.PageServiceIndex;
 import com.eriklievaart.javalightning.bundle.route.RouteServiceImpl;
 
 public class MvcBeans {
 
-	private RouteIndex routes = new RouteIndex();
+	private PageServiceIndex routes = new PageServiceIndex();
 	private BundleContext context;
 
 	public BundleContext getContext() {
@@ -19,7 +19,7 @@ public class MvcBeans {
 		this.context = context;
 	}
 
-	public RouteIndex getRouteIndex() {
+	public PageServiceIndex getRouteIndex() {
 		return routes;
 	}
 

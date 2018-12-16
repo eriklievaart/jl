@@ -1,12 +1,15 @@
 package com.eriklievaart.javalightning.bundle.api.page;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 
+import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 
 public class PageServiceBuilder {
 
 	private final List<Route> routes = NewCollection.list();
+	private BiPredicate<Route, RequestContext> accessible = (a, b) -> true;
 
 	public PageServiceBuilder() {
 	}
@@ -22,7 +25,6 @@ public class PageServiceBuilder {
 	}
 
 	public PageService createPageService(String name) {
-
 		return new PageService() {
 			@Override
 			public String getPrefix() {
@@ -33,6 +35,15 @@ public class PageServiceBuilder {
 			public Route[] getRoutes() {
 				return routes.toArray(new Route[] {});
 			}
+
+			@Override
+			public BiPredicate<Route, RequestContext> getAccessible() {
+				return accessible;
+			}
 		};
+	}
+
+	public void setAccessible(BiPredicate<Route, RequestContext> predicate) {
+		accessible = predicate;
 	}
 }

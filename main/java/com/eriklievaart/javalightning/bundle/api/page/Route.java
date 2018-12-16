@@ -3,6 +3,7 @@ package com.eriklievaart.javalightning.bundle.api.page;
 import java.util.EnumSet;
 import java.util.function.Supplier;
 
+import com.eriklievaart.toolkit.lang.api.ToString;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 
 public class Route {
@@ -32,5 +33,10 @@ public class Route {
 
 	public PageController createController() {
 		return supplier.get();
+	}
+
+	@Override
+	public String toString() {
+		return ToString.simple(this, "$[$]", id);
 	}
 }

@@ -24,4 +24,16 @@ public class Lightning {
 			}
 		});
 	}
+
+	public boolean isRouteAccessible(String service, String route) {
+		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
+			try {
+				return s.isAccessible(service, route, context);
+
+			} catch (RouteUnavailableException e) {
+				log.warn("Unable to find route $:$", service, route);
+				return false;
+			}
+		});
+	}
 }
