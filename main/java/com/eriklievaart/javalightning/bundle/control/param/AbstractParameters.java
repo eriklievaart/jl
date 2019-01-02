@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.eriklievaart.javalightning.bundle.api.Parameters;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
@@ -30,7 +31,14 @@ public abstract class AbstractParameters<V> implements Parameters {
 	}
 
 	@Override
-	public long getInteger(String key) throws ConversionException {
+	public void getString(String key, Consumer<String> consumer) {
+		if (contains(key)) {
+			consumer.accept(getString(key));
+		}
+	}
+
+	@Override
+	public int getInteger(String key) throws ConversionException {
 		return new IntegerConstructor().createConverter().convertToObject(getString(key));
 	}
 

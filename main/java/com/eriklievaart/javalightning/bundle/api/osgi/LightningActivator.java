@@ -1,5 +1,6 @@
 package com.eriklievaart.javalightning.bundle.api.osgi;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import com.eriklievaart.javalightning.bundle.api.page.PageService;
@@ -13,6 +14,7 @@ import com.eriklievaart.toolkit.lang.api.check.Check;
 public abstract class LightningActivator extends ActivatorWrapper {
 
 	private String name;
+	private AtomicBoolean hasPageService = new AtomicBoolean(false);
 
 	public LightningActivator(String name) {
 		Check.matches(name, "[a-z]++");
@@ -32,6 +34,8 @@ public abstract class LightningActivator extends ActivatorWrapper {
 	}
 
 	public void addPageService(Consumer<PageServiceBuilder> consumer) {
+		boolean previous = hasPageService.getAndSet(true);
+		Check.isFalse(previous, "duplicate PageService registration!");
 		PageServiceBuilder builder = new PageServiceBuilder();
 		consumer.accept(builder);
 		addServiceWithCleanup(PageService.class, builder.createPageService(name));

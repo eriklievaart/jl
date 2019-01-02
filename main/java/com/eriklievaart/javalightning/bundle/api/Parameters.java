@@ -3,6 +3,7 @@ package com.eriklievaart.javalightning.bundle.api;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 
@@ -16,7 +17,9 @@ public interface Parameters {
 
 	public abstract String getString(String key, String fallback);
 
-	public long getInteger(String key) throws ConversionException;
+	public void getString(String key, Consumer<String> ifPresent);
+
+	public int getInteger(String key) throws ConversionException;
 
 	public long getLong(String key) throws ConversionException;
 

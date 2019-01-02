@@ -16,8 +16,10 @@ import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 import com.eriklievaart.toolkit.lang.api.pattern.WildcardTool;
 import com.eriklievaart.toolkit.lang.api.str.Str;
+import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class RouteIndex {
+	private LogTemplate log = new LogTemplate(getClass());
 
 	private final String serviceId;
 	private Map<String, Route> pathToRoute = NewCollection.concurrentHashMap();
@@ -44,7 +46,9 @@ public class RouteIndex {
 
 		} else {
 			for (RouteType method : route.getTypes()) {
-				pathToRoute.put(createKey(method, path), route);
+				String key = createKey(method, path);
+				log.trace("installing route $", key);
+				pathToRoute.put(key, route);
 			}
 		}
 	}
@@ -59,6 +63,7 @@ public class RouteIndex {
 				return Optional.of(new SecureRoute(route, predicate));
 			}
 		}
+		log.warn("no controller for path % $", path, pathToRoute.keySet());
 		return Optional.empty();
 	}
 
