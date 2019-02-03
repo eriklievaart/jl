@@ -15,7 +15,7 @@ public class Lightning {
 	}
 
 	public String getRemotePath(String service, String route) {
-		log.info("getting remote path $.$", service, route);
+		log.debug("getting remote path $.$", service, route);
 		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
 			try {
 				return s.getRemotePath(service, route);
