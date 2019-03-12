@@ -11,6 +11,7 @@ import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.exception.RedirectException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
+import com.eriklievaart.javalightning.bundle.api.render.ServletReponseRenderer;
 import com.eriklievaart.javalightning.bundle.control.InOutJector;
 import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
 import com.eriklievaart.javalightning.bundle.route.RouteNotAccessibleException;
@@ -40,7 +41,12 @@ public class ContentServletCall {
 
 		try {
 			invoke(method, path, context);
-			context.getRenderer().render(context);
+			ServletReponseRenderer renderer = context.getRenderer();
+			if (renderer == null) {
+				log.warn("$:$ missing renderer", method, path);
+			} else {
+				renderer.render(context);
+			}
 
 		} catch (Exception e) {
 			handleException(method + ":" + path, e);
