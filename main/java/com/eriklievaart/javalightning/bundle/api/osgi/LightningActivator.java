@@ -17,7 +17,7 @@ public abstract class LightningActivator extends ActivatorWrapper {
 	private AtomicBoolean hasPageService = new AtomicBoolean(false);
 
 	public LightningActivator(String name) {
-		Check.matches(name, "[a-z]++");
+		JavalightningId.validateSyntax(name);
 		this.name = name;
 	}
 
@@ -40,4 +40,5 @@ public abstract class LightningActivator extends ActivatorWrapper {
 		consumer.accept(builder);
 		addServiceWithCleanup(PageService.class, builder.createPageService(name));
 	}
+
 }

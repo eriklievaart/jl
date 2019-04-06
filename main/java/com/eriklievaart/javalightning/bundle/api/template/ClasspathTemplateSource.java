@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.eriklievaart.javalightning.bundle.api.osgi.JavalightningId;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 import com.eriklievaart.toolkit.lang.api.str.Str;
@@ -26,7 +27,7 @@ public class ClasspathTemplateSource implements TemplateSource {
 	}
 
 	public ClasspathTemplateSource(Class<?> loader, String prefix, List<TemplateGlobal> globals) {
-		Check.matches(prefix, "[a-z]++");
+		JavalightningId.validateSyntax(prefix);
 		this.globals.addAll(globals);
 		this.loader = loader;
 		this.prefix = prefix;

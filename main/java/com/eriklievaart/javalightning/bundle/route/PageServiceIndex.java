@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
+import com.eriklievaart.javalightning.bundle.api.osgi.JavalightningId;
 import com.eriklievaart.javalightning.bundle.api.page.PageService;
 import com.eriklievaart.javalightning.bundle.api.page.Route;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
@@ -28,7 +29,7 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 		try {
 			log.info("registering PageService[$]: $", service.getPrefix(), service.getClass());
 			String prefix = service.getPrefix();
-			Check.matches(prefix, "[a-z]++");
+			JavalightningId.validateSyntax(prefix);
 
 			if (!services.containsKey(prefix)) {
 				services.putIfAbsent(prefix, new RouteIndex(service));

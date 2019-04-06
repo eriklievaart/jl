@@ -65,6 +65,7 @@ public class ContentServletCall {
 			redirect(original, (RedirectException) root);
 			return;
 		}
+		log.warn("Uncaught $: $", e, root.getClass().getSimpleName(), root.getMessage());
 		throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
 	}
 
