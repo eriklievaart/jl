@@ -40,5 +40,4 @@ public abstract class LightningActivator extends ActivatorWrapper {
 		consumer.accept(builder);
 		addServiceWithCleanup(PageService.class, builder.createPageService(name));
 	}
-
 }
