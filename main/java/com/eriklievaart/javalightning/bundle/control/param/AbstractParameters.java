@@ -55,6 +55,11 @@ public abstract class AbstractParameters<V> implements Parameters {
 	}
 
 	@Override
+	public void inject(Object object) {
+		new ParameterInjector(this).inject(object);
+	}
+
+	@Override
 	public String toString() {
 		return delegate.toString();
 	}

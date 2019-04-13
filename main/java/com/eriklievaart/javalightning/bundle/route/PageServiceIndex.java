@@ -15,6 +15,7 @@ import com.eriklievaart.osgi.toolkit.api.listener.SimpleServiceListener;
 import com.eriklievaart.toolkit.io.api.UrlTool;
 import com.eriklievaart.toolkit.lang.api.AssertionException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
+import com.eriklievaart.toolkit.lang.api.check.CheckCollection;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
@@ -81,6 +82,7 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 	}
 
 	public boolean isAccessible(String service, String route, RequestContext context) throws RouteUnavailableException {
+		CheckCollection.isPresent(services, service, "missing service % for route %", service, route);
 		return services.get(service).isAccessible(route, context);
 	}
 }

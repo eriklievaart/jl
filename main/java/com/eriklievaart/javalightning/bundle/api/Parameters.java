@@ -26,4 +26,6 @@ public interface Parameters {
 	public abstract MultiPartParameter getMultiPart(String key) throws IOException;
 
 	public Collection<String> getKeys();
+
+	public void inject(Object object);
 }
