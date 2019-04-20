@@ -8,17 +8,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
+import com.eriklievaart.javalightning.bundle.route.UnavoidableRedirects;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class ContentServlet extends HttpServlet {
 	private LogTemplate log = new LogTemplate(getClass());
 
 	private MvcBeans beans;
-	private final String home;
+	private UnavoidableRedirects redirects;
 
-	public ContentServlet(MvcBeans beans, String home) {
+	public ContentServlet(MvcBeans beans, UnavoidableRedirects redirects) {
 		this.beans = beans;
-		this.home = home;
+		this.redirects = redirects;
 	}
 
 	@Override
@@ -62,12 +63,7 @@ public class ContentServlet extends HttpServlet {
 		res.setCharacterEncoding("UTF-8");
 
 		RouteType method = RouteType.parse(req.getMethod());
-		String path = req.getRequestURI();
-
-		if (method == RouteType.GET && path.matches("^/*+$")) {
-			new ContentServletCall(beans, req, res).render(method, home);
-		} else {
-			new ContentServletCall(beans, req, res).render(method, path);
-		}
+		String path = redirects.redirect(req.getRequestURI());
+		new ContentServletCall(beans, req, res).render(method, path);
 	}
 }

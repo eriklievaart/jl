@@ -9,10 +9,10 @@ import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
 import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
-import com.eriklievaart.javalightning.mock.api.MockRequestContext;
+import com.eriklievaart.javalightning.mock.MockRequestContext;
 import com.eriklievaart.toolkit.lang.api.AssertionException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
-import com.eriklievaart.toolkit.test.api.BombSquad;
+import com.eriklievaart.toolkit.mock.BombSquad;
 
 public class PageServiceIndexU {
 

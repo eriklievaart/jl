@@ -93,7 +93,9 @@ public class ContentServletCall {
 			throw new RouteNotAccessibleException();
 
 		} else {
-			invoke(context, route.getController(context));
+			PageController controller = route.getController(context);
+			log.debug("$ -> controller $", route.getRoute(), controller);
+			invoke(context, controller);
 		}
 	}
 

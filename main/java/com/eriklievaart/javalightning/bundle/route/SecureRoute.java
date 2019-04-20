@@ -25,4 +25,8 @@ public class SecureRoute {
 		Check.isTrue(isAccessible(context), "route not accessible $", route);
 		return route.createController();
 	}
+
+	public Route getRoute() {
+		return route;
+	}
 }

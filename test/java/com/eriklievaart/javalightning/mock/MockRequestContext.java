@@ -1,4 +1,4 @@
-package com.eriklievaart.javalightning.mock.api;
+package com.eriklievaart.javalightning.mock;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 

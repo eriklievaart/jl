@@ -3,11 +3,13 @@ package com.eriklievaart.javalightning.bundle.control.param;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import com.eriklievaart.javalightning.bundle.api.Parameters;
+import com.eriklievaart.toolkit.bean.api.BeanInjector;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 import com.eriklievaart.toolkit.convert.api.construct.IntegerConstructor;
 import com.eriklievaart.toolkit.convert.api.construct.LongConstructor;
@@ -55,8 +57,10 @@ public abstract class AbstractParameters<V> implements Parameters {
 	}
 
 	@Override
-	public void inject(Object object) {
-		new ParameterInjector(this).inject(object);
+	public BeanInjector getParamInjector() {
+		Map<String, String> values = new HashMap<>();
+		delegate.keySet().forEach(key -> values.put(key, getString(key)));
+		return new BeanInjector(values);
 	}
 
 	@Override

@@ -30,4 +30,8 @@ public class MvcBeans {
 	public void setServletPrefix(String prefix) {
 		routes.setServletPrefix(prefix);
 	}
+
+	public void setHost(String host) {
+		routes.setHost(host);
+	}
 }

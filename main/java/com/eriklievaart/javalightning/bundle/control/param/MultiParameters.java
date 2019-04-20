@@ -19,7 +19,7 @@ public class MultiParameters extends AbstractParameters<MultiPartParameter> {
 
 	@Override
 	public List<String> getStrings(String key) {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class MultiParameters extends AbstractParameters<MultiPartParameter> {
 			String value = mp.getAsString();
 			Check.notNull(value, "Framework Error: Value of % should not be <null>, but an empty String.", key);
 			log.trace("retrieving parameter %  as string %", key, value);
-			return value;
+			return value.trim();
 
 		} catch (IOException e) {
 			throw new RuntimeIOException("Framwork Error: unable to read parameter, this should never happen.", e);

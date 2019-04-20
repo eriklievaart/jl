@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.eriklievaart.javalightning.bundle.api.Bean;
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
-import com.eriklievaart.javalightning.mock.api.MockRequestContext;
+import com.eriklievaart.javalightning.mock.MockRequestContext;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 
 public class InOutJectorU {

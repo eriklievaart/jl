@@ -48,7 +48,7 @@ public class ParametersSupplier implements Supplier<Parameters>, AutoCloseable {
 
 	private Parameters extract() {
 		String contentType = request.getHeader(CONTENT_TYPE_HEADER);
-		log.debug("contentType: $", contentType);
+		log.trace("contentType: $", contentType);
 		if (contentType == null || !contentType.toLowerCase().trim().startsWith("multipart/")) {
 			return createSimpleParameterMap();
 		}

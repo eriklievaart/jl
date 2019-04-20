@@ -1,4 +1,4 @@
-package com.eriklievaart.javalightning.mock.api;
+package com.eriklievaart.javalightning.mock;
 
 import java.io.IOException;
 import java.io.PrintWriter;

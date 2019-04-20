@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.eriklievaart.toolkit.bean.api.BeanInjector;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 
 public interface Parameters {
@@ -27,5 +28,5 @@ public interface Parameters {
 
 	public Collection<String> getKeys();
 
-	public void inject(Object object);
+	public BeanInjector getParamInjector();
 }

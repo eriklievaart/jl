@@ -1,22 +1,26 @@
-package com.eriklievaart.javalightning.freemarker;
+package com.eriklievaart.javalightning.mock;
 
 import java.io.InputStream;
 import java.util.Map;
 
 import com.eriklievaart.javalightning.bundle.api.template.TemplateSource;
 import com.eriklievaart.toolkit.io.api.StreamTool;
+import com.eriklievaart.toolkit.io.api.UrlTool;
+import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 
-public class DummyTemplateSource implements TemplateSource {
+public class MockTemplateSource implements TemplateSource {
 
-	private String prefix;
 	private Map<String, String> templates = NewCollection.map();
+	private String prefix;
 
-	public DummyTemplateSource(String id) {
-		this.prefix = id;
+	public MockTemplateSource(String prefix) {
+		this.prefix = prefix;
 	}
 
 	public void put(String path, String template) {
+		Check.isEqual(UrlTool.getHead(path), prefix);
+		Check.isTrue(path.startsWith("/"));
 		templates.put(path, template);
 	}
 

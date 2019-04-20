@@ -1,9 +1,9 @@
 package com.eriklievaart.javalightning.bundle.control.param;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.eriklievaart.javalightning.bundle.api.MultiPartParameter;
 import com.eriklievaart.toolkit.lang.api.check.CheckCollection;
@@ -22,7 +22,7 @@ public class SingleParameters extends AbstractParameters<List<String>> {
 	@Override
 	public List<String> getStrings(String key) {
 		CheckCollection.isPresent(delegate, key);
-		return Collections.unmodifiableList(delegate.get(key));
+		return delegate.get(key).stream().map(str -> str.trim()).collect(Collectors.toList());
 	}
 
 	@Override

@@ -24,6 +24,19 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 
 	private Map<String, RouteIndex> services = NewCollection.concurrentHashMap();
 	private AtomicReference<String> prefixReference = new AtomicReference<>("");
+	private AtomicReference<String> hostReference = new AtomicReference<>("");
+
+	public String getServletPrefix() {
+		return prefixReference.get();
+	}
+
+	public void setServletPrefix(String prefix) {
+		prefixReference.set(prefix);
+	}
+
+	public void setHost(String host) {
+		hostReference.set(host);
+	}
 
 	@Override
 	public void register(PageService service) {
@@ -77,12 +90,12 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 		return path.startsWith("/") ? path : "/" + path;
 	}
 
-	public void setServletPrefix(String prefix) {
-		prefixReference.set(prefix);
-	}
-
 	public boolean isAccessible(String service, String route, RequestContext context) throws RouteUnavailableException {
 		CheckCollection.isPresent(services, service, "missing service % for route %", service, route);
 		return services.get(service).isAccessible(route, context);
+	}
+
+	public String getHost() {
+		return hostReference.get();
 	}
 }

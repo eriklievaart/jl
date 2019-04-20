@@ -10,4 +10,8 @@ public interface RouteService {
 	public String getRemotePath(String service, String route) throws RouteUnavailableException;
 
 	public boolean isAccessible(String service, String route, RequestContext context) throws RouteUnavailableException;
+
+	public String getRemoteAddress();
+
+	public String getHost();
 }

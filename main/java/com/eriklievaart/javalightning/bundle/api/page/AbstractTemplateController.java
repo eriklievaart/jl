@@ -5,22 +5,37 @@ import java.util.Map;
 
 import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 import com.eriklievaart.javalightning.bundle.api.render.TemplateRenderer;
+import com.eriklievaart.toolkit.lang.api.check.CheckStr;
+import com.eriklievaart.toolkit.lang.api.str.Str;
 
 public abstract class AbstractTemplateController implements PageController {
 
 	private ResponseBuilder response;
 	protected final Map<String, Object> model = new Hashtable<>();
+	private String template;
 
 	@Override
 	@SuppressWarnings("hiding")
 	public final void invoke(ResponseBuilder response) throws Exception {
 		this.response = response;
 		invoke();
+		renderTemplate();
 	}
 
 	public abstract void invoke() throws Exception;
 
-	public void renderTemplate(String template) {
+	public void setTemplate(String path) {
+		template = path;
+	}
+
+	public void setTemplateIfMissing(String path) {
+		if (Str.isBlank(template)) {
+			template = path;
+		}
+	}
+
+	private void renderTemplate() {
+		CheckStr.notBlank(template, "No template set for controller $", getClass());
 		TemplateRenderer renderer = new TemplateRenderer(template);
 		model.forEach((k, v) -> renderer.put(k, v));
 		response.setRenderer(renderer);
