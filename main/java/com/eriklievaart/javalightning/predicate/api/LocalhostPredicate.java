@@ -10,7 +10,10 @@ import com.eriklievaart.javalightning.bundle.api.page.Route;
 public class LocalhostPredicate implements BiPredicate<Route, RequestContext> {
 	@Override
 	public boolean test(Route route, RequestContext context) {
-		HttpServletRequest request = context.getRequest();
+		return isLocalhost(context.getRequest());
+	}
+
+	public static boolean isLocalhost(HttpServletRequest request) {
 		return request.getRemoteHost().equals("127.0.0.1");
 	}
 }

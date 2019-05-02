@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.eriklievaart.javalightning.bundle.api.Parameters;
+import com.eriklievaart.toolkit.bean.api.BeanInjector;
 import com.eriklievaart.toolkit.bean.api.BeanValidationException;
 import com.eriklievaart.toolkit.bean.api.annotate.Size;
 import com.eriklievaart.toolkit.lang.api.check.Check;
@@ -46,7 +47,7 @@ public class AbstractParametersU {
 		Parameters parameters = new SingleParameters(map);
 
 		BombSquad.diffuse(BeanValidationException.class, "invalid: [inject]", () -> {
-			parameters.getParamInjector().inject(injectme).validate(injectme);
+			new BeanInjector(parameters.getMap()).inject(injectme).validate(injectme);
 		});
 	}
 }

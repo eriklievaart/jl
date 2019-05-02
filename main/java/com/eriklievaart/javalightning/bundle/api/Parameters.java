@@ -3,14 +3,16 @@ package com.eriklievaart.javalightning.bundle.api;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
-import com.eriklievaart.toolkit.bean.api.BeanInjector;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 
 public interface Parameters {
 
 	public boolean contains(String key);
+
+	public boolean containsAll(String... keys);
 
 	public abstract List<String> getStrings(String key);
 
@@ -28,5 +30,5 @@ public interface Parameters {
 
 	public Collection<String> getKeys();
 
-	public BeanInjector getParamInjector();
+	public Map<String, String> getMap();
 }

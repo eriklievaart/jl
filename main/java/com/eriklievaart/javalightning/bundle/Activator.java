@@ -1,6 +1,7 @@
 package com.eriklievaart.javalightning.bundle;
 
 import java.util.Dictionary;
+import java.util.Hashtable;
 
 import javax.servlet.Servlet;
 
@@ -30,12 +31,16 @@ public class Activator extends ActivatorWrapper {
 		beans.setHost(getContextWrapper().getPropertyString(HOST, "localhost:8000"));
 		ContentServlet servlet = new ContentServlet(beans, getRedirects(getContextWrapper()));
 
-		String pattern = UrlTool.append(prefix, "*");
-		Dictionary<String, ?> props = dictionary(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, pattern);
-
-		addServiceWithCleanup(Servlet.class, servlet, props);
+		addServiceWithCleanup(Servlet.class, servlet, getOsgiPropertiesServlet(prefix));
 		addServiceWithCleanup(RouteService.class, beans.getRouteService());
-		addWhiteboardWithCleanup(PageService.class, beans.getRouteIndex());
+		addWhiteboardWithCleanup(PageService.class, beans.getPageServiceIndex());
+	}
+
+	private Dictionary<String, Object> getOsgiPropertiesServlet(String prefix) {
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, UrlTool.append(prefix, "*"));
+		props.put("osgi.http.whiteboard.servlet.multipart.enabled", true);
+		return props;
 	}
 
 	private UnavoidableRedirects getRedirects(ContextWrapper wrapper) {

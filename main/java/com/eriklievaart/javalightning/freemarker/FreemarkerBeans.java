@@ -1,7 +1,9 @@
 package com.eriklievaart.javalightning.freemarker;
 
+import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.freemarker.config.FreemarkerConfigurationFactory;
 import com.eriklievaart.javalightning.freemarker.config.FreemarkerOsgiConfig;
+import com.eriklievaart.javalightning.freemarker.model.InjectedGlobals;
 import com.eriklievaart.javalightning.freemarker.whiteboard.GlobalsIndex;
 import com.eriklievaart.javalightning.freemarker.whiteboard.TemplateSourceIndex;
 
@@ -37,5 +39,9 @@ public class FreemarkerBeans {
 
 	public GlobalsIndex getGlobalsIndex() {
 		return globals;
+	}
+
+	public InjectedGlobals getInjectedGlobals(RequestContext context) {
+		return new InjectedGlobals(globals, context);
 	}
 }

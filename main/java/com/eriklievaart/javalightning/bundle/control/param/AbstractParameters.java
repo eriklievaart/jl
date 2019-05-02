@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.eriklievaart.javalightning.bundle.api.Parameters;
-import com.eriklievaart.toolkit.bean.api.BeanInjector;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 import com.eriklievaart.toolkit.convert.api.construct.IntegerConstructor;
 import com.eriklievaart.toolkit.convert.api.construct.LongConstructor;
@@ -25,6 +24,16 @@ public abstract class AbstractParameters<V> implements Parameters {
 	@Override
 	public boolean contains(String key) {
 		return delegate.containsKey(key);
+	}
+
+	@Override
+	public boolean containsAll(String... keys) {
+		for (String key : keys) {
+			if (!contains(key)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -57,10 +66,10 @@ public abstract class AbstractParameters<V> implements Parameters {
 	}
 
 	@Override
-	public BeanInjector getParamInjector() {
-		Map<String, String> values = new HashMap<>();
-		delegate.keySet().forEach(key -> values.put(key, getString(key)));
-		return new BeanInjector(values);
+	public Map<String, String> getMap() {
+		Map<String, String> map = new HashMap<>();
+		delegate.keySet().forEach(key -> map.put(key, getString(key)));
+		return map;
 	}
 
 	@Override

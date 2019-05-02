@@ -28,9 +28,9 @@ public class FreemarkerTemplateService implements TemplateService {
 		if (log.isTraceEnabled()) {
 			data.forEach((k, v) -> log.trace("template param % -> %", k, v));
 		}
-		data.putIfAbsent("globals", beans.getGlobalsIndex());
-		data.putIfAbsent("parameter", new FreemarkerParameters(context.getParameterSupplier()));
 		data.putIfAbsent("lightning", new Lightning(context));
+		data.putIfAbsent("globals", beans.getInjectedGlobals(context));
+		data.putIfAbsent("parameter", new FreemarkerParameters(context.getParameterSupplier()));
 
 		StringWriter writer = new StringWriter();
 		try {

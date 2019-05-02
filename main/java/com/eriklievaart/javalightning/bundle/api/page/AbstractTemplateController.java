@@ -7,8 +7,10 @@ import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 import com.eriklievaart.javalightning.bundle.api.render.TemplateRenderer;
 import com.eriklievaart.toolkit.lang.api.check.CheckStr;
 import com.eriklievaart.toolkit.lang.api.str.Str;
+import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public abstract class AbstractTemplateController implements PageController {
+	protected LogTemplate log = new LogTemplate(getClass());
 
 	private ResponseBuilder response;
 	protected final Map<String, Object> model = new Hashtable<>();
@@ -24,6 +26,10 @@ public abstract class AbstractTemplateController implements PageController {
 
 	public abstract void invoke() throws Exception;
 
+	public boolean isTemplateSet() {
+		return Str.notBlank(template);
+	}
+
 	public void setTemplate(String path) {
 		template = path;
 	}
@@ -36,8 +42,12 @@ public abstract class AbstractTemplateController implements PageController {
 
 	private void renderTemplate() {
 		CheckStr.notBlank(template, "No template set for controller $", getClass());
-		TemplateRenderer renderer = new TemplateRenderer(template);
+		TemplateRenderer renderer = createRenderer();
 		model.forEach((k, v) -> renderer.put(k, v));
 		response.setRenderer(renderer);
+	}
+
+	protected TemplateRenderer createRenderer() {
+		return new TemplateRenderer(template);
 	}
 }

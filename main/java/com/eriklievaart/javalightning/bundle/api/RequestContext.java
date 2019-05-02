@@ -5,17 +5,18 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.osgi.framework.BundleContext;
 
 import com.eriklievaart.javalightning.bundle.api.render.ServletReponseRenderer;
+import com.eriklievaart.javalightning.bundle.control.InOutJector;
 import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
 import com.eriklievaart.javalightning.bundle.route.ContentTypes;
 import com.eriklievaart.osgi.toolkit.api.ContextWrapper;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
 
 public class RequestContext {
-
 	private ResponseBuilder responseBuilder;
 	private HttpServletResponse response;
 	private HttpServletRequest request;
@@ -49,6 +50,10 @@ public class RequestContext {
 		return request;
 	}
 
+	public HttpSession getSession() {
+		return request.getSession();
+	}
+
 	public ResponseBuilder getResponseBuilder() {
 		return responseBuilder;
 	}
@@ -60,5 +65,9 @@ public class RequestContext {
 	public void reset() {
 		responseBuilder = new ResponseBuilder();
 		responseBuilder.setContentType(ContentTypes.getDefaultContentType(request.getRequestURI()));
+	}
+
+	public void injectBeanAnnotations(Object object) {
+		new InOutJector(this).injectAnnotatedFields(object);
 	}
 }

@@ -13,6 +13,7 @@ import com.eriklievaart.javalightning.bundle.api.Parameters;
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.osgi.Service;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
+import com.eriklievaart.toolkit.bean.api.BeanInjector;
 import com.eriklievaart.toolkit.lang.api.FormattedException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
@@ -36,6 +37,7 @@ public class InOutJector {
 		suppliers.put(HttpServletResponse.class, f -> requestContext.getResponse());
 		suppliers.put(HttpSession.class, f -> requestContext.getRequest().getSession());
 		suppliers.put(Parameters.class, f -> requestContext.getParameterSupplier().get());
+		suppliers.put(BeanInjector.class, f -> new BeanInjector(requestContext.getParameterSupplier().get().getMap()));
 		suppliers.put(ServiceCollection.class, this::createServiceCollection);
 	}
 

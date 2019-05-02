@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -15,7 +16,10 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import com.eriklievaart.toolkit.lang.api.collection.MultiMap;
+
 public class MockServletRequest implements ServletRequest {
+	private MultiMap<String, String> parameters = new MultiMap<>();
 
 	@Override
 	public AsyncContext getAsyncContext() {
@@ -87,9 +91,19 @@ public class MockServletRequest implements ServletRequest {
 		return null;
 	}
 
+	public void addParameter(String key, String value) {
+		parameters.add(key, value);
+	}
+
 	@Override
-	public String getParameter(String arg0) {
-		return null;
+	public String getParameter(String key) {
+		List<String> values = parameters.get(key);
+		return values.isEmpty() ? null : values.get(0);
+	}
+
+	@Override
+	public String[] getParameterValues(String key) {
+		return parameters.get(key).toArray(new String[0]);
 	}
 
 	@Override
@@ -99,11 +113,6 @@ public class MockServletRequest implements ServletRequest {
 
 	@Override
 	public Enumeration<String> getParameterNames() {
-		return null;
-	}
-
-	@Override
-	public String[] getParameterValues(String arg0) {
 		return null;
 	}
 

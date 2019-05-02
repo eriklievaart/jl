@@ -7,8 +7,10 @@ import org.junit.Test;
 
 import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
+import com.eriklievaart.javalightning.bundle.api.page.PageSecurity;
 import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
+import com.eriklievaart.javalightning.bundle.page.AccessiblePageServiceBuilder;
 import com.eriklievaart.javalightning.mock.MockRequestContext;
 import com.eriklievaart.toolkit.lang.api.AssertionException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
@@ -20,7 +22,7 @@ public class PageServiceIndexU {
 	public void getRemotePathDefault() throws Exception {
 		PageServiceIndex index = new PageServiceIndex();
 
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
 		index.register(routes.createPageService("service"));
 
@@ -33,7 +35,7 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 		index.setServletPrefix("mvc");
 
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
 		index.register(routes.createPageService("service"));
 
@@ -45,7 +47,7 @@ public class PageServiceIndexU {
 	public void getPathMissingService() throws Exception {
 		PageServiceIndex index = new PageServiceIndex();
 
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
 		index.register(routes.createPageService("service"));
 
@@ -58,7 +60,7 @@ public class PageServiceIndexU {
 	public void getPathMissingRoute() throws Exception {
 		PageServiceIndex index = new PageServiceIndex();
 
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
 		index.register(routes.createPageService("service"));
 
@@ -72,7 +74,7 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 
 		DummyPageController controller = new DummyPageController();
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> controller);
 		index.register(routes.createPageService("/service"));
 
@@ -86,7 +88,7 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 
 		DummyPageController controller = new DummyPageController();
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> controller);
 		index.register(routes.createPageService("service"));
 
@@ -103,7 +105,7 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 
 		DummyPageController controller = new DummyPageController();
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("empty").map("", RouteType.GET, () -> controller);
 		index.register(routes.createPageService("service"));
 
@@ -121,7 +123,7 @@ public class PageServiceIndexU {
 
 		DummyPageController controller = new DummyPageController();
 
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("empty").map("", RouteType.GET, () -> controller);
 		index.register(routes.createPageService("service"));
 
@@ -146,7 +148,7 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 
 		DummyPageController controller = new DummyPageController();
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("suffix", RouteType.GET, () -> controller);
 		index.register(routes.createPageService("service"));
 
@@ -160,7 +162,7 @@ public class PageServiceIndexU {
 
 		DummyPageController controller = new DummyPageController();
 
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("star").map("path/*", RouteType.GET, () -> controller);
 		index.register(routes.createPageService("wildcard"));
 
@@ -178,7 +180,7 @@ public class PageServiceIndexU {
 
 		DummyPageController controller = new DummyPageController();
 
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("suffix", RouteType.POST, () -> controller);
 		index.register(routes.createPageService("service"));
 
@@ -191,7 +193,7 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 
 		DummyPageController controller = new DummyPageController();
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("suffix", RouteType.POST, () -> controller);
 		index.register(routes.createPageService("service"));
 
@@ -205,7 +207,7 @@ public class PageServiceIndexU {
 
 		DummyPageController controller = new DummyPageController();
 
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("suffix", EnumSet.of(RouteType.POST, RouteType.GET), () -> controller);
 		index.register(routes.createPageService("service"));
 
@@ -218,9 +220,9 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 
 		DummyPageController controller = new DummyPageController();
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> controller);
-		routes.setAccessible((route, context) -> false);
+		routes.setSecurity(new PageSecurity((a, b) -> false));
 		index.register(routes.createPageService("service"));
 
 		Optional<SecureRoute> resolved = index.resolve(RouteType.GET, "/service/suffix/");
@@ -237,9 +239,9 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 
 		DummyPageController controller = new DummyPageController();
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> controller);
-		routes.setAccessible((route, context) -> true);
+		routes.setSecurity(new PageSecurity((a, b) -> true));
 		index.register(routes.createPageService("service"));
 
 		Check.isTrue(index.isAccessible("service", "suffix", MockRequestContext.instance()));
@@ -250,9 +252,9 @@ public class PageServiceIndexU {
 		PageServiceIndex index = new PageServiceIndex();
 
 		DummyPageController controller = new DummyPageController();
-		PageServiceBuilder routes = new PageServiceBuilder();
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> controller);
-		routes.setAccessible((route, context) -> false);
+		routes.setSecurity(new PageSecurity((a, b) -> false));
 		index.register(routes.createPageService("service"));
 
 		Check.isFalse(index.isAccessible("service", "suffix", MockRequestContext.instance()));

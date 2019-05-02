@@ -11,6 +11,7 @@ import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 import com.eriklievaart.javalightning.bundle.api.exception.ExternalRedirectException;
 import com.eriklievaart.javalightning.bundle.api.exception.InternalRedirectException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
+import com.eriklievaart.javalightning.bundle.api.page.PageSecurity;
 import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.javalightning.mock.MockHttpServletRequest;
@@ -31,7 +32,8 @@ public class ContentServletCallU {
 		DummyPageController controller = new DummyPageController();
 		PageServiceBuilder routes = new PageServiceBuilder();
 		routes.newRoute("bar").mapGet("/bar/", () -> controller);
-		beans.getRouteIndex().register(routes.createPageService("foo"));
+		routes.setSecurity(new PageSecurity((a, b) -> true));
+		beans.getPageServiceIndex().register(routes.createPageService("foo"));
 
 		invocation.invoke(RouteType.GET, "/mvc/foo/bar", MockRequestContext.instance());
 		Check.isTrue(controller.isInvoked());
@@ -55,7 +57,8 @@ public class ContentServletCallU {
 		PageServiceBuilder routes = new PageServiceBuilder();
 		routes.newRoute("internal").mapGet("/internal/", () -> redirect);
 		routes.newRoute("destination").mapGet("/destination/", () -> destination);
-		beans.getRouteIndex().register(routes.createPageService("service"));
+		routes.setSecurity(new PageSecurity((a, b) -> true));
+		beans.getPageServiceIndex().register(routes.createPageService("service"));
 
 		invocation.render(RouteType.GET, "/mvc/service/internal");
 		Check.isTrue(destination.isInvoked());
@@ -77,10 +80,47 @@ public class ContentServletCallU {
 
 		PageServiceBuilder routes = new PageServiceBuilder();
 		routes.newRoute("bar").mapGet("/bar/", () -> controller);
-		beans.getRouteIndex().register(routes.createPageService("foo"));
+		routes.setSecurity(new PageSecurity((a, b) -> true));
+		beans.getPageServiceIndex().register(routes.createPageService("foo"));
 
 		invocation.render(RouteType.GET, "/mvc/foo/bar");
 		response.checkIsRedirectedTo("http://example.com");
+	}
+
+	@Test
+	public void resolveNotAccessible() throws Exception {
+		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
+		ContentServletCall invocation = new ContentServletCall(beans, null, null);
+
+		DummyPageController controller = new DummyPageController();
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("bar").mapGet("/bar/", () -> controller);
+		routes.setSecurity(new PageSecurity((a, b) -> false));
+		beans.getPageServiceIndex().register(routes.createPageService("foo"));
+
+		BombSquad.diffuse(RouteNotAccessibleException.class, "not accessible", () -> {
+			invocation.invoke(RouteType.GET, "/mvc/foo/bar", MockRequestContext.instance());
+		});
+	}
+
+	@Test
+	public void resolveNotAccessibleCustomException() throws Exception {
+		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
+		ContentServletCall invocation = new ContentServletCall(beans, null, null);
+
+		DummyPageController controller = new DummyPageController();
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("bar").mapGet("/bar/", () -> controller);
+		routes.setSecurity(new PageSecurity((a, b) -> false, () -> {
+			throw new RuntimeException("appel");
+		}));
+		beans.getPageServiceIndex().register(routes.createPageService("foo"));
+
+		BombSquad.diffuse(RuntimeException.class, "appel", () -> {
+			invocation.invoke(RouteType.GET, "/mvc/foo/bar", MockRequestContext.instance());
+		});
 	}
 
 	@Test

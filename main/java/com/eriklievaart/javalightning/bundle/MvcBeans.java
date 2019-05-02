@@ -19,7 +19,7 @@ public class MvcBeans {
 		this.context = context;
 	}
 
-	public PageServiceIndex getRouteIndex() {
+	public PageServiceIndex getPageServiceIndex() {
 		return routes;
 	}
 

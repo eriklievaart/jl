@@ -1,24 +1,23 @@
 package com.eriklievaart.javalightning.bundle.route;
 
-import java.util.function.BiPredicate;
-
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
+import com.eriklievaart.javalightning.bundle.api.page.PageSecurity;
 import com.eriklievaart.javalightning.bundle.api.page.Route;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 
 public class SecureRoute {
 
-	private Route route;
-	private BiPredicate<Route, RequestContext> predicate;
+	private final Route route;
+	private final PageSecurity security;
 
-	public SecureRoute(Route route, BiPredicate<Route, RequestContext> predicate) {
+	public SecureRoute(Route route, PageSecurity security) {
 		this.route = route;
-		this.predicate = predicate;
+		this.security = security;
 	}
 
 	public boolean isAccessible(RequestContext context) {
-		return predicate.test(route, context);
+		return security.getAccessible().test(route, context);
 	}
 
 	public PageController getController(RequestContext context) {
@@ -28,5 +27,11 @@ public class SecureRoute {
 
 	public Route getRoute() {
 		return route;
+	}
+
+	public void validate(RequestContext context) throws Exception {
+		if (!isAccessible(context)) {
+			security.getOnDeny().invoke();
+		}
 	}
 }

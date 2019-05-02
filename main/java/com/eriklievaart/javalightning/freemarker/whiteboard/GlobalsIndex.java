@@ -12,10 +12,6 @@ public class GlobalsIndex {
 
 	private Map<String, TemplateGlobal> index = NewCollection.concurrentHashMap();
 
-	public boolean isAvailable(String id) {
-		return index.containsKey(id);
-	}
-
 	public boolean contains(String key) {
 		return index.containsKey(key);
 	}

@@ -14,6 +14,9 @@ public class MockFreemarkerService {
 
 	private final FreemarkerBeans beans = new FreemarkerBeans();
 	private final FreemarkerTemplateService service = new FreemarkerTemplateService(beans);
+	private final MockHttpServletRequest request = new MockHttpServletRequest();
+	private final MockHttpServletResponse response = new MockHttpServletResponse();
+	private final MockRequestContext context = new MockRequestContext(request, response);
 
 	public MockFreemarkerService(TemplateSource templates) {
 		beans.getTemplateSourceListener().register(templates);
@@ -31,8 +34,11 @@ public class MockFreemarkerService {
 		model.put(key, value);
 	}
 
+	public void addParameter(String key, String value) {
+		request.addParameter(key, value);
+	}
+
 	public String render(String template) {
-		MockRequestContext context = MockRequestContext.instance();
 		model.putIfAbsent("lightning", new MockLightning());
 		return StreamTool.toString(service.render(template, model, context));
 	}

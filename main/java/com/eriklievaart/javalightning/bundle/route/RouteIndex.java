@@ -3,10 +3,10 @@ package com.eriklievaart.javalightning.bundle.route;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
+import com.eriklievaart.javalightning.bundle.api.page.PageSecurity;
 import com.eriklievaart.javalightning.bundle.api.page.PageService;
 import com.eriklievaart.javalightning.bundle.api.page.Route;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
@@ -22,14 +22,17 @@ public class RouteIndex {
 	private LogTemplate log = new LogTemplate(getClass());
 
 	private final String serviceId;
+	private final PageSecurity security;
 	private Map<String, Route> pathToRoute = NewCollection.concurrentHashMap();
 	private Map<String, Route> idToRoute = NewCollection.concurrentHashMap();
 	private List<Route> wildcardMappings = NewCollection.concurrentList();
-	private BiPredicate<Route, RequestContext> predicate;
 
 	public RouteIndex(PageService service) {
+		Check.notNull(service.getPrefix(), service.getSecurity());
+
 		this.serviceId = service.getPrefix();
-		this.predicate = service.getAccessible();
+		this.security = service.getSecurity();
+
 		for (Route route : service.getRoutes()) {
 			installRoute(route);
 		}
@@ -56,11 +59,11 @@ public class RouteIndex {
 	public Optional<SecureRoute> resolve(RouteType method, String path) {
 		String key = createKey(method, UrlTool.removeTrailingSlash(path));
 		if (pathToRoute.containsKey(key)) {
-			return Optional.of(new SecureRoute(pathToRoute.get(key), predicate));
+			return Optional.of(new SecureRoute(pathToRoute.get(key), security));
 		}
 		for (Route route : wildcardMappings) {
 			if (route.getTypes().contains(method) && WildcardTool.match(route.getPath(), path == null ? "" : path)) {
-				return Optional.of(new SecureRoute(route, predicate));
+				return Optional.of(new SecureRoute(route, security));
 			}
 		}
 		log.warn("no controller for path % $", path, pathToRoute.keySet());
@@ -84,7 +87,7 @@ public class RouteIndex {
 		if (!idToRoute.containsKey(routeId)) {
 			throw new RouteUnavailableException(getUnavailableMessage(routeId));
 		}
-		return predicate.test(idToRoute.get(routeId), context);
+		return security.test(idToRoute.get(routeId), context);
 	}
 
 	private String getUnavailableMessage(String id) {

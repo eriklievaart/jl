@@ -1,15 +1,14 @@
 package com.eriklievaart.javalightning.bundle.api.page;
 
 import java.util.List;
-import java.util.function.BiPredicate;
 
-import com.eriklievaart.javalightning.bundle.api.RequestContext;
+import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 
 public class PageServiceBuilder {
 
 	private final List<Route> routes = NewCollection.list();
-	private BiPredicate<Route, RequestContext> accessible = (a, b) -> true;
+	private PageSecurity security;
 
 	public PageServiceBuilder() {
 	}
@@ -25,6 +24,8 @@ public class PageServiceBuilder {
 	}
 
 	public PageService createPageService(String name) {
+		Check.notNull(security, "setSecurity not called");
+
 		return new PageService() {
 			@Override
 			public String getPrefix() {
@@ -37,13 +38,14 @@ public class PageServiceBuilder {
 			}
 
 			@Override
-			public BiPredicate<Route, RequestContext> getAccessible() {
-				return accessible;
+			public PageSecurity getSecurity() {
+				return security;
 			}
 		};
 	}
 
-	public void setAccessible(BiPredicate<Route, RequestContext> predicate) {
-		accessible = predicate;
+	public PageServiceBuilder setSecurity(PageSecurity secure) {
+		this.security = secure;
+		return this;
 	}
 }

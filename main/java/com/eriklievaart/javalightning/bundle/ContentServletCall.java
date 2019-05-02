@@ -12,8 +12,8 @@ import com.eriklievaart.javalightning.bundle.api.exception.RedirectException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.javalightning.bundle.api.render.ServletReponseRenderer;
-import com.eriklievaart.javalightning.bundle.control.InOutJector;
 import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
+import com.eriklievaart.javalightning.bundle.route.PageServiceIndex;
 import com.eriklievaart.javalightning.bundle.route.RouteNotAccessibleException;
 import com.eriklievaart.javalightning.bundle.route.SecureRoute;
 import com.eriklievaart.toolkit.lang.api.FormattedException;
@@ -65,7 +65,7 @@ public class ContentServletCall {
 			redirect(original, (RedirectException) root);
 			return;
 		}
-		log.warn("Uncaught $: $", e, root.getClass().getSimpleName(), root.getMessage());
+		log.error("Uncaught $: $", e, root.getClass().getSimpleName(), root.getMessage());
 		throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
 	}
 
@@ -82,29 +82,24 @@ public class ContentServletCall {
 	}
 
 	public void invoke(RouteType method, String path, RequestContext context) throws Exception {
-		Optional<SecureRoute> optional = beans.getRouteIndex().resolve(method, path);
+		PageServiceIndex index = beans.getPageServiceIndex();
+		Optional<SecureRoute> optional = index.resolve(method, path);
 		if (!optional.isPresent()) {
-			String message = Str.sub("no controller for uri $:$ $", method, path, beans.getRouteIndex().listServices());
-			throw new FileNotFoundException(message);
+			throw new FileNotFoundException(Str.sub("no controller for uri $:$ $", method, path, index.listServices()));
 		}
-
 		SecureRoute route = optional.get();
-		if (!route.isAccessible(context)) {
-			throw new RouteNotAccessibleException();
+		route.validate(context);
 
-		} else {
-			PageController controller = route.getController(context);
-			log.debug("$ -> controller $", route.getRoute(), controller);
-			invoke(context, controller);
-		}
+		PageController controller = route.getController(context);
+		log.debug("$ -> controller $", route.getRoute(), controller);
+		invoke(context, controller);
 	}
 
 	private void invoke(RequestContext context, PageController controller) throws Exception {
 		ParametersSupplier parameters = new ParametersSupplier(context.getRequest());
 		context.setParameterSupplier(parameters);
 		try {
-			InOutJector ioj = new InOutJector(context);
-			ioj.injectAnnotatedFields(controller);
+			context.injectBeanAnnotations(controller);
 			controller.invoke(context.getResponseBuilder());
 
 		} finally {
