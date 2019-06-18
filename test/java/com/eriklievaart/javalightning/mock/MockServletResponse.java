@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
 
 public class MockServletResponse implements ServletResponse {
+
+	private MockServletOutputStream output = new MockServletOutputStream();
 
 	@Override
 	public void flushBuffer() throws IOException {
@@ -34,8 +35,8 @@ public class MockServletResponse implements ServletResponse {
 	}
 
 	@Override
-	public ServletOutputStream getOutputStream() throws IOException {
-		return new MockServletOutputStream();
+	public MockServletOutputStream getOutputStream() throws IOException {
+		return output;
 	}
 
 	@Override

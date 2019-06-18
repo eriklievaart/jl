@@ -1,5 +1,7 @@
 package com.eriklievaart.javalightning.bundle.route;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +16,8 @@ import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.page.PageSecurity;
 import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
+import com.eriklievaart.javalightning.bundle.rule.RequestAddress;
+import com.eriklievaart.javalightning.bundle.rule.RuleResultType;
 import com.eriklievaart.javalightning.mock.MockHttpServletRequest;
 import com.eriklievaart.javalightning.mock.MockHttpServletResponse;
 import com.eriklievaart.javalightning.mock.MockRequestContext;
@@ -22,6 +26,34 @@ import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.mock.BombSquad;
 
 public class ContentServletCallU {
+
+	@Test
+	public void renderBlockRequest() throws IOException {
+		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
+
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		MockHttpServletResponse res = new MockHttpServletResponse();
+		ContentServletCall invocation = new ContentServletCall(beans, req, res);
+
+		invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"), RuleResultType.BLOCK);
+		res.getOutputStream().checkIsClosed();
+		res.getOutputStream().checkNoDataWritten();
+	}
+
+	@Test
+	public void renderHttpsRedirect() throws IOException {
+		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
+
+		MockHttpServletResponse res = new MockHttpServletResponse();
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		ContentServletCall invocation = new ContentServletCall(beans, req, res);
+
+		req.setUrl("http://secure.com/path");
+		invocation.render(new RequestAddress(RouteType.GET, "secure.com", "path"), RuleResultType.HTTPS);
+		res.checkIsRedirectedTo("https://secure.com/path");
+	}
 
 	@Test
 	public void invokePageController() throws Exception {
@@ -35,7 +67,7 @@ public class ContentServletCallU {
 		routes.setSecurity(new PageSecurity((a, b) -> true));
 		beans.getPageServiceIndex().register(routes.createPageService("foo"));
 
-		invocation.invoke(RouteType.GET, "/mvc/foo/bar", MockRequestContext.instance());
+		invocation.invoke(new RequestAddress(RouteType.GET, "/mvc/foo/bar"), new MockRequestContext());
 		Check.isTrue(controller.isInvoked());
 	}
 
@@ -60,7 +92,7 @@ public class ContentServletCallU {
 		routes.setSecurity(new PageSecurity((a, b) -> true));
 		beans.getPageServiceIndex().register(routes.createPageService("service"));
 
-		invocation.render(RouteType.GET, "/mvc/service/internal");
+		invocation.render(new RequestAddress(RouteType.GET, "/mvc/service/internal"));
 		Check.isTrue(destination.isInvoked());
 	}
 
@@ -83,7 +115,7 @@ public class ContentServletCallU {
 		routes.setSecurity(new PageSecurity((a, b) -> true));
 		beans.getPageServiceIndex().register(routes.createPageService("foo"));
 
-		invocation.render(RouteType.GET, "/mvc/foo/bar");
+		invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"));
 		response.checkIsRedirectedTo("http://example.com");
 	}
 
@@ -100,7 +132,7 @@ public class ContentServletCallU {
 		beans.getPageServiceIndex().register(routes.createPageService("foo"));
 
 		BombSquad.diffuse(RouteNotAccessibleException.class, "not accessible", () -> {
-			invocation.invoke(RouteType.GET, "/mvc/foo/bar", MockRequestContext.instance());
+			invocation.invoke(new RequestAddress(RouteType.GET, "/mvc/foo/bar"), new MockRequestContext());
 		});
 	}
 
@@ -119,7 +151,7 @@ public class ContentServletCallU {
 		beans.getPageServiceIndex().register(routes.createPageService("foo"));
 
 		BombSquad.diffuse(RuntimeException.class, "appel", () -> {
-			invocation.invoke(RouteType.GET, "/mvc/foo/bar", MockRequestContext.instance());
+			invocation.invoke(new RequestAddress(RouteType.GET, "/mvc/foo/bar"), new MockRequestContext());
 		});
 	}
 
@@ -131,7 +163,7 @@ public class ContentServletCallU {
 		ContentServletCall invocation = new ContentServletCall(beans, request, null);
 
 		BombSquad.diffuse(FormattedException.class, "Missing service", () -> {
-			invocation.render(RouteType.GET, "/mvc/foo/bar");
+			invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"));
 		});
 	}
 }

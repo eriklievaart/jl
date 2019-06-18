@@ -7,19 +7,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.eriklievaart.javalightning.bundle.api.page.RouteType;
-import com.eriklievaart.javalightning.bundle.route.UnavoidableRedirects;
+import com.eriklievaart.javalightning.bundle.rule.RequestAddress;
+import com.eriklievaart.javalightning.bundle.rule.RuleEngine;
+import com.eriklievaart.javalightning.bundle.rule.RuleResultType;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class ContentServlet extends HttpServlet {
 	private LogTemplate log = new LogTemplate(getClass());
 
 	private MvcBeans beans;
-	private UnavoidableRedirects redirects;
+	private RuleEngine rules;
 
-	public ContentServlet(MvcBeans beans, UnavoidableRedirects redirects) {
+	public ContentServlet(MvcBeans beans, RuleEngine rules) {
 		this.beans = beans;
-		this.redirects = redirects;
+		this.rules = rules;
 	}
 
 	@Override
@@ -62,8 +63,8 @@ public class ContentServlet extends HttpServlet {
 		req.setCharacterEncoding("UTF-8");
 		res.setCharacterEncoding("UTF-8");
 
-		RouteType method = RouteType.parse(req.getMethod());
-		String path = redirects.redirect(req.getRequestURI());
-		new ContentServletCall(beans, req, res).render(method, path);
+		RequestAddress address = new RequestAddress(req);
+		RuleResultType result = rules.apply(address);
+		new ContentServletCall(beans, req, res).render(address, result);
 	}
 }

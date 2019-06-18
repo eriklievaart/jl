@@ -10,12 +10,14 @@ import javax.servlet.http.HttpServletResponse;
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.exception.RedirectException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
-import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.javalightning.bundle.api.render.ServletReponseRenderer;
 import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
 import com.eriklievaart.javalightning.bundle.route.PageServiceIndex;
 import com.eriklievaart.javalightning.bundle.route.RouteNotAccessibleException;
 import com.eriklievaart.javalightning.bundle.route.SecureRoute;
+import com.eriklievaart.javalightning.bundle.rule.RequestAddress;
+import com.eriklievaart.javalightning.bundle.rule.RuleResultType;
+import com.eriklievaart.toolkit.io.api.UrlTool;
 import com.eriklievaart.toolkit.lang.api.FormattedException;
 import com.eriklievaart.toolkit.lang.api.ThrowableTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;
@@ -36,24 +38,47 @@ public class ContentServletCall {
 		this.res = res;
 	}
 
-	public void render(RouteType method, String path) throws IOException {
+	public void render(RequestAddress address, RuleResultType result) throws IOException {
+		switch (result) {
+
+		case BLOCK:
+			log.debug("blocking %", req.getRequestURL());
+			res.getOutputStream().close();
+			return;
+
+		case HTTPS:
+			String url = req.getRequestURL().insert(4, "s").toString();
+			log.trace("https redirect %", url);
+			res.sendRedirect(url);
+			return;
+
+		case ALLOW:
+			render(address);
+			return;
+
+		default:
+			throw new FormattedException("invalid result $", result);
+		}
+	}
+
+	public void render(RequestAddress address) throws IOException {
 		RequestContext context = new RequestContext(beans.getContext(), req, res);
 
 		try {
-			invoke(method, path, context);
+			invoke(address, context);
 			ServletReponseRenderer renderer = context.getRenderer();
 			if (renderer == null) {
-				log.warn("$:$ missing renderer", method, path);
+				log.warn("$ missing renderer", address);
 			} else {
 				renderer.render(context);
 			}
 
 		} catch (Exception e) {
-			handleException(method + ":" + path, e);
+			handleException(address, e);
 		}
 	}
 
-	private void handleException(String original, Exception e) throws IOException {
+	private void handleException(RequestAddress address, Exception e) throws IOException {
 		Throwable root = ThrowableTool.getRootCause(e);
 
 		if (root instanceof RouteNotAccessibleException) {
@@ -62,30 +87,31 @@ public class ContentServletCall {
 			return;
 		}
 		if (root instanceof RedirectException) {
-			redirect(original, (RedirectException) root);
+			redirect(address, (RedirectException) root);
 			return;
 		}
 		log.error("Uncaught $: $", e, root.getClass().getSimpleName(), root.getMessage());
 		throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
 	}
 
-	private void redirect(String original, RedirectException redirect) throws IOException {
+	private void redirect(RequestAddress original, RedirectException redirect) throws IOException {
 		String url = redirect.getRedirect();
 
 		if (redirect.isInternal()) {
-			log.debug("internal redirect % to %", original, url);
-			render(RouteType.GET, url);
+			log.debug("internal redirect % to %", original.getPath(), url);
+			render(new RequestAddress(original.getMethod(), original.getDomain(), UrlTool.getPath(url)));
 		} else {
-			log.debug("external redirect % to %", original, url);
+			log.debug("external redirect % to %", original.getPath(), url);
 			res.sendRedirect(url);
 		}
 	}
 
-	public void invoke(RouteType method, String path, RequestContext context) throws Exception {
+	public void invoke(RequestAddress address, RequestContext context) throws Exception {
 		PageServiceIndex index = beans.getPageServiceIndex();
-		Optional<SecureRoute> optional = index.resolve(method, path);
+
+		Optional<SecureRoute> optional = index.resolve(address.getMethod(), address.getPath());
 		if (!optional.isPresent()) {
-			throw new FileNotFoundException(Str.sub("no controller for uri $:$ $", method, path, index.listServices()));
+			throw new FileNotFoundException(Str.sub("no controller for uri $ $", address, index.listServices()));
 		}
 		SecureRoute route = optional.get();
 		route.validate(context);

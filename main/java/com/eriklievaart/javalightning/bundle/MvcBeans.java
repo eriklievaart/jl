@@ -34,4 +34,8 @@ public class MvcBeans {
 	public void setHost(String host) {
 		routes.setHost(host);
 	}
+
+	public void setHttps(boolean value) {
+		routes.setHttps(value);
+	}
 }

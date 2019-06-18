@@ -1,6 +1,7 @@
 package com.eriklievaart.javalightning.email.api;
 
 import com.eriklievaart.javalightning.bundle.api.MultiPartParameter;
+import com.eriklievaart.toolkit.lang.api.str.Str;
 
 public class Email {
 
@@ -66,5 +67,10 @@ public class Email {
 
 	public MultiPartParameter getAttachment() {
 		return attachment;
+	}
+
+	@Override
+	public String toString() {
+		return Str.sub("from:$\nto:$\ncc:$\nbcc:$\nsubject:$\nbody:\n$", from, to, cc, bcc, subject, body);
 	}
 }

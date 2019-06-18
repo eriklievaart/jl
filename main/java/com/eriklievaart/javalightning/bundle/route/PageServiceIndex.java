@@ -3,6 +3,7 @@ package com.eriklievaart.javalightning.bundle.route;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
@@ -25,17 +26,25 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 	private Map<String, RouteIndex> services = NewCollection.concurrentHashMap();
 	private AtomicReference<String> prefixReference = new AtomicReference<>("");
 	private AtomicReference<String> hostReference = new AtomicReference<>("");
+	private AtomicBoolean httpsReference = new AtomicBoolean();
 
 	public String getServletPrefix() {
 		return prefixReference.get();
 	}
 
-	public void setServletPrefix(String prefix) {
-		prefixReference.set(prefix);
+	public void setServletPrefix(String value) {
+		prefixReference.set(value);
+		log.info("servlet prefix: %", value);
 	}
 
-	public void setHost(String host) {
-		hostReference.set(host);
+	public void setHost(String value) {
+		hostReference.set(value);
+		log.info("host: %", value);
+	}
+
+	public void setHttps(boolean value) {
+		httpsReference.set(value);
+		log.info("https: %", value);
 	}
 
 	@Override
@@ -97,5 +106,9 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 
 	public String getHost() {
 		return hostReference.get();
+	}
+
+	public boolean isHttps() {
+		return httpsReference.get();
 	}
 }

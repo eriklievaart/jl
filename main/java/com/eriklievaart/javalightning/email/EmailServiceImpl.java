@@ -23,12 +23,14 @@ import com.eriklievaart.javalightning.bundle.api.MultiPartParameter;
 import com.eriklievaart.javalightning.email.api.Email;
 import com.eriklievaart.javalightning.email.api.EmailService;
 import com.eriklievaart.toolkit.lang.api.check.Check;
+import com.eriklievaart.toolkit.lang.api.str.Str;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class EmailServiceImpl implements EmailService {
 	private LogTemplate log = new LogTemplate(getClass());
 
 	private AtomicReference<String> fallbackReplyAddress = new AtomicReference<>("noreply@example.com");
+	private AtomicReference<String> host = new AtomicReference<>("localhost");
 
 	@Override
 	public void setFallbackReplyToAddress(String email) {
@@ -39,10 +41,14 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	public void send(Email email) {
 		try {
+			if (Str.isBlank(email.getFrom())) {
+				email.setFrom(fallbackReplyAddress.get());
+			}
 			Transport.send(createMessage(email));
+
 		} catch (Exception e) {
 			log.warn("unable to send email: $", e, e.getMessage());
-			log.trace("to:$\nsubject:$\nbody:\n$", email.getTo(), email.getSubject(), email.getBody());
+			log.debug(email);
 		}
 	}
 
@@ -51,7 +57,7 @@ public class EmailServiceImpl implements EmailService {
 
 		Message msg = createSingleOrMultiPartMessage(email.getAttachment(), email.getBody());
 
-		msg.setFrom(new InternetAddress(email.getFrom() != null ? email.getFrom() : fallbackReplyAddress.get()));
+		msg.setFrom(new InternetAddress(email.getFrom()));
 		msg.setRecipients(Message.RecipientType.TO, parseEmails(email.getTo()));
 		msg.setRecipients(Message.RecipientType.CC, parseEmails(email.getCc()));
 		msg.setRecipients(Message.RecipientType.BCC, parseEmails(email.getBcc()));
@@ -109,9 +115,13 @@ public class EmailServiceImpl implements EmailService {
 	private Session createMailSession() {
 		Properties props = new Properties();
 
-		props.put("mail.smtp.host", "localhost");
+		props.put("mail.smtp.host", host.get());
 		props.put("mail.debug", "false");
 
 		return Session.getInstance(props);
+	}
+
+	public void setHost(String value) {
+		host.set(value);
 	}
 }

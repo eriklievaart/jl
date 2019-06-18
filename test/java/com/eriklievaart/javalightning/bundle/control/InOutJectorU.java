@@ -16,7 +16,7 @@ public class InOutJectorU {
 			private RequestContext context;
 		}
 		Dummy dummy = new Dummy();
-		InOutJector ioj = new InOutJector(MockRequestContext.instance());
+		InOutJector ioj = new InOutJector(new MockRequestContext());
 		ioj.injectAnnotatedFields(dummy);
 		Check.notNull(dummy.context);
 	}

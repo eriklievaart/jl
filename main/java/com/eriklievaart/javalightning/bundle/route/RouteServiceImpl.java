@@ -5,6 +5,7 @@ import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableExcep
 import com.eriklievaart.javalightning.bundle.api.page.Route;
 import com.eriklievaart.javalightning.bundle.api.page.RouteService;
 import com.eriklievaart.toolkit.io.api.UrlTool;
+import com.eriklievaart.toolkit.lang.api.str.Str;
 
 public class RouteServiceImpl implements RouteService {
 
@@ -31,7 +32,9 @@ public class RouteServiceImpl implements RouteService {
 
 	@Override
 	public String getRemoteAddress() {
-		return UrlTool.append(routes.getHost(), routes.getServletPrefix());
+		String protocol = routes.isHttps() ? "https" : "http";
+		String root = Str.sub("$://$", protocol, routes.getHost());
+		return UrlTool.append(root, routes.getServletPrefix());
 	}
 
 	@Override

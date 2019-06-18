@@ -6,9 +6,14 @@ import com.eriklievaart.javalightning.email.api.EmailService;
 import com.eriklievaart.osgi.toolkit.api.ActivatorWrapper;
 
 public class Activator extends ActivatorWrapper {
+	public static final String HOST = "com.eriklievaart.javalightning.email.host";
 
 	@Override
 	protected void init(BundleContext context) throws Exception {
-		addServiceWithCleanup(EmailService.class, new EmailServiceImpl());
+		EmailServiceImpl service = new EmailServiceImpl();
+		getContextWrapper().getPropertyStringOptional(HOST, host -> {
+			service.setHost(host);
+		});
+		addServiceWithCleanup(EmailService.class, service);
 	}
 }

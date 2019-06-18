@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
@@ -18,6 +17,11 @@ import com.eriklievaart.toolkit.io.api.UrlTool;
 public class MockHttpServletRequest extends MockServletRequest implements HttpServletRequest {
 
 	private String url = "https://www.example.com/path";
+	private MockHttpSession session = new MockHttpSession();
+
+	public void setUrl(String value) {
+		url = value;
+	}
 
 	@Override
 	public boolean authenticate(HttpServletResponse arg0) throws IOException, ServletException {
@@ -125,13 +129,13 @@ public class MockHttpServletRequest extends MockServletRequest implements HttpSe
 	}
 
 	@Override
-	public HttpSession getSession() {
-		return null;
+	public MockHttpSession getSession() {
+		return session;
 	}
 
 	@Override
-	public HttpSession getSession(boolean arg0) {
-		return null;
+	public MockHttpSession getSession(boolean arg0) {
+		return session;
 	}
 
 	@Override

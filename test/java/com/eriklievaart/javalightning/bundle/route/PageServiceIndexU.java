@@ -96,7 +96,7 @@ public class PageServiceIndexU {
 		Check.isTrue(resolved.isPresent());
 
 		Check.isFalse(controller.isInvoked());
-		resolved.get().getController(MockRequestContext.instance()).invoke(new ResponseBuilder());
+		resolved.get().getController(new MockRequestContext()).invoke(new ResponseBuilder());
 		Check.isTrue(controller.isInvoked());
 	}
 
@@ -113,7 +113,7 @@ public class PageServiceIndexU {
 		Check.isTrue(resolved.isPresent());
 
 		Check.isFalse(controller.isInvoked());
-		resolved.get().getController(MockRequestContext.instance()).invoke(new ResponseBuilder());
+		resolved.get().getController(new MockRequestContext()).invoke(new ResponseBuilder());
 		Check.isTrue(controller.isInvoked());
 	}
 
@@ -131,7 +131,7 @@ public class PageServiceIndexU {
 		Check.isTrue(resolved.isPresent());
 
 		Check.isFalse(controller.isInvoked());
-		resolved.get().getController(MockRequestContext.instance()).invoke(new ResponseBuilder());
+		resolved.get().getController(new MockRequestContext()).invoke(new ResponseBuilder());
 		Check.isTrue(controller.isInvoked());
 	}
 
@@ -170,7 +170,7 @@ public class PageServiceIndexU {
 		Check.isTrue(resolved.isPresent());
 
 		Check.isFalse(controller.isInvoked());
-		resolved.get().getController(MockRequestContext.instance()).invoke(new ResponseBuilder());
+		resolved.get().getController(new MockRequestContext()).invoke(new ResponseBuilder());
 		Check.isTrue(controller.isInvoked());
 	}
 
@@ -229,7 +229,7 @@ public class PageServiceIndexU {
 		Check.isTrue(resolved.isPresent());
 
 		BombSquad.diffuse(AssertionException.class, "route not accessible", () -> {
-			resolved.get().getController(MockRequestContext.instance()).invoke(new ResponseBuilder());
+			resolved.get().getController(new MockRequestContext()).invoke(new ResponseBuilder());
 		});
 		Check.isFalse(controller.isInvoked());
 	}
@@ -244,7 +244,7 @@ public class PageServiceIndexU {
 		routes.setSecurity(new PageSecurity((a, b) -> true));
 		index.register(routes.createPageService("service"));
 
-		Check.isTrue(index.isAccessible("service", "suffix", MockRequestContext.instance()));
+		Check.isTrue(index.isAccessible("service", "suffix", new MockRequestContext()));
 	}
 
 	@Test
@@ -257,6 +257,6 @@ public class PageServiceIndexU {
 		routes.setSecurity(new PageSecurity((a, b) -> false));
 		index.register(routes.createPageService("service"));
 
-		Check.isFalse(index.isAccessible("service", "suffix", MockRequestContext.instance()));
+		Check.isFalse(index.isAccessible("service", "suffix", new MockRequestContext()));
 	}
 }
