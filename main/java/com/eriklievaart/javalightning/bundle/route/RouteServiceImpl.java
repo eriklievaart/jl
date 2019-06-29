@@ -1,5 +1,7 @@
 package com.eriklievaart.javalightning.bundle.route;
 
+import java.util.Map;
+
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
 import com.eriklievaart.javalightning.bundle.api.page.Route;
@@ -23,6 +25,11 @@ public class RouteServiceImpl implements RouteService {
 	@Override
 	public String getRemotePath(String service, String route) throws RouteUnavailableException {
 		return routes.getRemotePath(service, route);
+	}
+
+	@Override
+	public String getRemotePath(String s, String r, Map<String, String> params) throws RouteUnavailableException {
+		return Str.sub("$?$", getRemotePath(s, r), UrlTool.getQueryString(params));
 	}
 
 	@Override

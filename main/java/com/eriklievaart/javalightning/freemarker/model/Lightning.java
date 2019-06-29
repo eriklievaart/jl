@@ -1,5 +1,7 @@
 package com.eriklievaart.javalightning.freemarker.model;
 
+import java.util.Map;
+
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
 import com.eriklievaart.javalightning.bundle.api.page.RouteService;
@@ -19,6 +21,17 @@ public class Lightning {
 		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
 			try {
 				return s.getRemotePath(service, route);
+			} catch (RouteUnavailableException e) {
+				throw new RuntimeException(e.getMessage(), e);
+			}
+		});
+	}
+
+	public String getRemotePath(String service, String route, Map<String, String> parameters) {
+		log.trace("getting remote path $.$", service, route);
+		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
+			try {
+				return s.getRemotePath(service, route, parameters);
 			} catch (RouteUnavailableException e) {
 				throw new RuntimeException(e.getMessage(), e);
 			}

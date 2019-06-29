@@ -1,6 +1,7 @@
 package com.eriklievaart.javalightning.bundle.control.param;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import com.eriklievaart.javalightning.bundle.api.Parameters;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 import com.eriklievaart.toolkit.convert.api.construct.IntegerConstructor;
 import com.eriklievaart.toolkit.convert.api.construct.LongConstructor;
+import com.eriklievaart.toolkit.lang.api.collection.MapTool;
 
 public abstract class AbstractParameters<V> implements Parameters {
 
@@ -70,6 +72,11 @@ public abstract class AbstractParameters<V> implements Parameters {
 		Map<String, String> map = new HashMap<>();
 		delegate.keySet().forEach(key -> map.put(key, getString(key)));
 		return map;
+	}
+
+	@Override
+	public Map<String, String> getMap(String... keys) {
+		return MapTool.map(Arrays.asList(keys), this::getString);
 	}
 
 	@Override

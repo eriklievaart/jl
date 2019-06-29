@@ -31,4 +31,6 @@ public interface Parameters {
 	public Collection<String> getKeys();
 
 	public Map<String, String> getMap();
+
+	public Map<String, String> getMap(String... keys);
 }
