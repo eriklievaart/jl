@@ -1,6 +1,7 @@
 package com.eriklievaart.javalightning.bundle.api.page;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
@@ -19,8 +20,34 @@ public class PageServiceBuilder {
 		}
 	}
 
+	/**
+	 * Create a new route with the specified id.
+	 *
+	 * @return used to configure the specifics of the route (HTTP method & PageController)
+	 */
 	public RouteBuilder newRoute(String id) {
 		return new RouteBuilder(id, routes);
+	}
+
+	/**
+	 * shorthand for creating a HTTP GET route where the path matches the route id.
+	 */
+	public void newIdentityRouteGet(String id, Supplier<PageController> supplier) {
+		newRoute(id).mapGet(id, supplier);
+	}
+
+	/**
+	 * shorthand for creating a HTTP POST route where the path matches the route id.
+	 */
+	public void newIdentityRoutePost(String id, Supplier<PageController> supplier) {
+		newRoute(id).mapPost(id, supplier);
+	}
+
+	/**
+	 * shorthand for creating a HTTP GET & POST route where the path matches the route id.
+	 */
+	public void newIdentityRouteGetAndPost(String id, Supplier<PageController> supplier) {
+		newRoute(id).mapGetAndPost(id, supplier);
 	}
 
 	public PageService createPageService(String name) {
