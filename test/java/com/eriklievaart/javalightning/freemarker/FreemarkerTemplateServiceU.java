@@ -17,11 +17,11 @@ public class FreemarkerTemplateServiceU {
 	@Test
 	public void render() {
 		MockTemplateSource templates = new MockTemplateSource("dummy");
-		templates.put("/dummy/template.tpl", "${globals.get('date')}");
+		templates.put("/dummy/template.ftlh", "${globals.get('date')}");
 
 		MockFreemarkerService freemarker = new MockFreemarkerService(templates);
 		freemarker.register(TemplateGlobal.of("date", "today"));
-		String result = freemarker.render("/dummy/template.tpl");
+		String result = freemarker.render("/dummy/template.ftlh");
 
 		Check.isEqual(result, "today");
 	}
@@ -29,7 +29,7 @@ public class FreemarkerTemplateServiceU {
 	@Test
 	public void renderWithInjectedBean() {
 		MockTemplateSource templates = new MockTemplateSource("dummy");
-		templates.put("/dummy/template.tpl", "${globals.get('variable').get()}");
+		templates.put("/dummy/template.ftlh", "${globals.get('variable').get()}");
 
 		class InjectMe implements Supplier<String> {
 			@Bean
@@ -44,7 +44,7 @@ public class FreemarkerTemplateServiceU {
 		MockFreemarkerService freemarker = new MockFreemarkerService(templates);
 		freemarker.addParameter("fruit", "pomegranate");
 		freemarker.register(TemplateGlobal.of("variable", () -> new InjectMe()));
-		String result = freemarker.render("/dummy/template.tpl");
+		String result = freemarker.render("/dummy/template.ftlh");
 
 		Check.isEqual(result, "pomegranate");
 	}
