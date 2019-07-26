@@ -56,8 +56,32 @@ public abstract class AbstractParameters<V> implements Parameters {
 	}
 
 	@Override
+	public int getInteger(String key, int fallback) throws ConversionException {
+		return contains(key) ? getInteger(key) : fallback;
+	}
+
+	@Override
+	public void getInteger(String key, Consumer<Integer> consumer) throws ConversionException {
+		if (contains(key)) {
+			consumer.accept(getInteger(key));
+		}
+	}
+
+	@Override
 	public long getLong(String key) throws ConversionException {
 		return new LongConstructor().createConverter().convertToObject(getString(key));
+	}
+
+	@Override
+	public long getLong(String key, long fallback) throws ConversionException {
+		return contains(key) ? getLong(key) : fallback;
+	}
+
+	@Override
+	public void getLong(String key, Consumer<Long> consumer) throws ConversionException {
+		if (contains(key)) {
+			consumer.accept(getLong(key));
+		}
 	}
 
 	@Override

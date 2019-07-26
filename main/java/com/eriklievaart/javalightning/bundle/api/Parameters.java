@@ -24,7 +24,15 @@ public interface Parameters {
 
 	public int getInteger(String key) throws ConversionException;
 
+	public int getInteger(String key, int fallback) throws ConversionException;
+
+	public void getInteger(String key, Consumer<Integer> ifPresent) throws ConversionException;
+
 	public long getLong(String key) throws ConversionException;
+
+	public long getLong(String key, long fallback) throws ConversionException;
+
+	public void getLong(String key, Consumer<Long> ifPresent) throws ConversionException;
 
 	public abstract MultiPartParameter getMultiPart(String key) throws IOException;
 
