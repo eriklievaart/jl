@@ -7,12 +7,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.eriklievaart.javalightning.bundle.api.Parameters;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 import com.eriklievaart.toolkit.convert.api.construct.IntegerConstructor;
 import com.eriklievaart.toolkit.convert.api.construct.LongConstructor;
+import com.eriklievaart.toolkit.lang.api.collection.ListTool;
 import com.eriklievaart.toolkit.lang.api.collection.MapTool;
 
 public abstract class AbstractParameters<V> implements Parameters {
@@ -24,18 +26,24 @@ public abstract class AbstractParameters<V> implements Parameters {
 	}
 
 	@Override
-	public boolean contains(String key) {
-		return delegate.containsKey(key);
+	public boolean contains(String key, String... tail) {
+		List<String> keys = ListTool.of(key);
+		ListTool.addAll(keys, tail);
+		return containsAll(keys);
 	}
 
-	@Override
-	public boolean containsAll(String... keys) {
+	private boolean containsAll(List<String> keys) {
 		for (String key : keys) {
-			if (!contains(key)) {
+			if (!delegate.containsKey(key)) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public Optional<String> getOptional(String key) {
+		return contains(key) ? Optional.of(getString(key)) : Optional.empty();
 	}
 
 	@Override

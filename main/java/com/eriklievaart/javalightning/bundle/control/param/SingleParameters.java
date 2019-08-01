@@ -15,11 +15,6 @@ public class SingleParameters extends AbstractParameters<List<String>> {
 	}
 
 	@Override
-	public boolean contains(String key) {
-		return delegate.containsKey(key);
-	}
-
-	@Override
 	public List<String> getStrings(String key) {
 		CheckCollection.isPresent(delegate, key);
 		return delegate.get(key).stream().map(str -> str.trim()).collect(Collectors.toList());

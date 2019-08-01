@@ -4,17 +4,18 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 
 public interface Parameters {
 
-	public boolean contains(String key);
-
-	public boolean containsAll(String... keys);
+	public boolean contains(String key, String... keys);
 
 	public abstract List<String> getStrings(String key);
+
+	public abstract Optional<String> getOptional(String key);
 
 	public abstract String getString(String key);
 
