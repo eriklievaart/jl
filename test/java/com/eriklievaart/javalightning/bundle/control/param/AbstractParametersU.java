@@ -66,7 +66,7 @@ public class AbstractParametersU {
 		map.put("inject", Arrays.asList("1234567890"));
 		Parameters parameters = new SingleParameters(map);
 
-		BombSquad.diffuse(BeanValidationException.class, "invalid: [inject]", () -> {
+		BombSquad.diffuse(BeanValidationException.class, "invalid: [inject", () -> {
 			new BeanInjector(parameters.getMap()).inject(injectme).validate(injectme);
 		});
 	}
