@@ -17,6 +17,7 @@ org.apache.felix.http.servlet-api org.apache.felix 1.1.2
 org.apache.felix.framework org.apache.felix 5.6.10
 
 [test]
+osgi-mock @local @snapshot
 toolkit-mock @local @snapshot
 assertj-core org.assertj 3.10.0
 junit junit 4.7
