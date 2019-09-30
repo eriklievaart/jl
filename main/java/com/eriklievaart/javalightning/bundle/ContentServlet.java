@@ -59,12 +59,23 @@ public class ContentServlet extends HttpServlet {
 	}
 
 	private void invoke(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		log.debug("received request for url %", req.getRequestURL());
-		req.setCharacterEncoding("UTF-8");
-		res.setCharacterEncoding("UTF-8");
+		long start = System.currentTimeMillis();
+		String url = req.getRequestURL().toString();
 
-		RequestAddress address = new RequestAddress(req);
-		RuleResultType result = rules.apply(address);
-		new ContentServletCall(beans, req, res).render(address, result);
+		try {
+			log.debug("received request for url %", url);
+			req.setCharacterEncoding("UTF-8");
+			res.setCharacterEncoding("UTF-8");
+
+			RequestAddress address = new RequestAddress(req);
+			RuleResultType result = rules.apply(address);
+			new ContentServletCall(beans, req, res).render(address, result);
+
+		} finally {
+			long spent = System.currentTimeMillis() - start;
+			if (spent > 100) {
+				log.debug("spent $ms on url %", spent, url);
+			}
+		}
 	}
 }
