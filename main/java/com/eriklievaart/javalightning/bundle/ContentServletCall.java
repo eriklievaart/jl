@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
+import com.eriklievaart.javalightning.bundle.api.exception.InternalRedirectException;
 import com.eriklievaart.javalightning.bundle.api.exception.RedirectException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.render.ServletReponseRenderer;
@@ -74,24 +75,32 @@ public class ContentServletCall {
 			}
 
 		} catch (Exception e) {
-			handleException(address, e);
+			handleException(address, context, e);
 		}
 	}
 
-	private void handleException(RequestAddress address, Exception e) throws IOException {
+	private void handleException(RequestAddress address, RequestContext context, Exception e) throws IOException {
 		Throwable root = ThrowableTool.getRootCause(e);
+		String exceptionPath = beans.getPageServiceIndex().getExceptionRedirect();
 
 		if (root instanceof RouteNotAccessibleException) {
 			log.debug("access denied for % on %", req.getRemoteHost(), req.getRequestURL());
 			res.setStatus(404);
 			return;
-		}
-		if (root instanceof RedirectException) {
+
+		} else if (root instanceof RedirectException) {
 			redirect(address, (RedirectException) root);
 			return;
+
 		}
 		log.error("Uncaught $: $", e, root.getClass().getSimpleName(), root.getMessage());
-		throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
+		if (Str.notBlank(exceptionPath)) {
+			context.getRequest().setAttribute("exception", e);
+			redirect(address, new InternalRedirectException(exceptionPath));
+
+		} else {
+			throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
+		}
 	}
 
 	private void redirect(RequestAddress original, RedirectException redirect) throws IOException {

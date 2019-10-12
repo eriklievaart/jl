@@ -27,6 +27,7 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 	private AtomicReference<String> prefixReference = new AtomicReference<>("");
 	private AtomicReference<String> hostReference = new AtomicReference<>("");
 	private AtomicBoolean httpsReference = new AtomicBoolean();
+	private AtomicReference<String> exceptionRedirect = new AtomicReference<>();
 
 	public String getServletPrefix() {
 		return prefixReference.get();
@@ -110,5 +111,13 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 
 	public boolean isHttps() {
 		return httpsReference.get();
+	}
+
+	public String getExceptionRedirect() {
+		return exceptionRedirect.get();
+	}
+
+	public void setExceptionRedirect(String path) {
+		exceptionRedirect.set(path);
 	}
 }

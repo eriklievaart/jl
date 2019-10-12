@@ -38,4 +38,8 @@ public class MvcBeans {
 	public void setHttps(boolean value) {
 		routes.setHttps(value);
 	}
+
+	public void setExceptionRedirect(String redirect) {
+		routes.setExceptionRedirect(redirect);
+	}
 }

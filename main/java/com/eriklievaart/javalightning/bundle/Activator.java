@@ -24,6 +24,7 @@ public class Activator extends ActivatorWrapper {
 	private static final String HOST = "com.eriklievaart.javalightning.bundle.host";
 	private static final String HTTPS = "com.eriklievaart.javalightning.bundle.https";
 	private static final String SERVLET_PREFIX = "com.eriklievaart.javalightning.bundle.servlet_prefix";
+	private static final String EXCEPTION_REDIRECT = "com.eriklievaart.javalightning.bundle.exception.redirect";
 	private static final String RULES = "com.eriklievaart.javalightning.bundle.rules";
 
 	@Override
@@ -34,6 +35,7 @@ public class Activator extends ActivatorWrapper {
 		String prefix = getContextWrapper().getPropertyString(SERVLET_PREFIX, "");
 		beans.setServletPrefix(prefix);
 		beans.setHost(getContextWrapper().getPropertyString(HOST, "localhost:8000"));
+		beans.setExceptionRedirect(getContextWrapper().getPropertyString(EXCEPTION_REDIRECT, ""));
 		beans.setHttps(getContextWrapper().getPropertyBoolean(HTTPS, false));
 		ContentServlet servlet = new ContentServlet(beans, createRulesEngine(getContextWrapper()));
 
