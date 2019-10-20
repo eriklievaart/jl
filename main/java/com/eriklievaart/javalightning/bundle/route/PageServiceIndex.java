@@ -18,6 +18,7 @@ import com.eriklievaart.toolkit.lang.api.AssertionException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.check.CheckCollection;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
+import com.eriklievaart.toolkit.lang.api.str.Str;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class PageServiceIndex implements SimpleServiceListener<PageService> {
@@ -114,7 +115,18 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 	}
 
 	public String getExceptionRedirect() {
-		return exceptionRedirect.get();
+		String path = exceptionRedirect.get();
+		if (Str.isBlank(path)) {
+			return "";
+		}
+		Optional<SecureRoute> optional = resolve(RouteType.GET, path);
+		if (optional.isPresent()) {
+			return path;
+
+		} else {
+			log.warn("no path registered for exception redirect %", path);
+			return "";
+		}
 	}
 
 	public void setExceptionRedirect(String path) {
