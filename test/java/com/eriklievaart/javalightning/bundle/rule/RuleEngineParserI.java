@@ -31,6 +31,18 @@ public class RuleEngineParserI {
 	}
 
 	@Test
+	public void parseBlockTildePattern() {
+		IniNode node = new IniNode("block");
+		node.setProperty("pattern", "foo~");
+
+		RuleEngine engine = RuleEngineParser.parse(Arrays.asList(node));
+		Check.isEqual(engine.apply(new RequestAddress(RouteType.GET, "/foo")), RuleResultType.BLOCK);
+		Check.isEqual(engine.apply(new RequestAddress(RouteType.GET, "/foo/bar")), RuleResultType.BLOCK);
+		Check.isEqual(engine.apply(new RequestAddress(RouteType.GET, "/baz")), RuleResultType.ALLOW);
+		Check.isEqual(engine.apply(new RequestAddress(RouteType.GET, "/food")), RuleResultType.ALLOW);
+	}
+
+	@Test
 	public void parseAllowHttps() {
 		IniNode node = new IniNode("allow");
 		node.setProperty("https", "redirect");

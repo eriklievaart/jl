@@ -43,6 +43,7 @@ public class ContentServletCall {
 		switch (result) {
 
 		case BLOCK:
+			res.sendError(404);
 			log.debug("blocking %", req.getRequestURL());
 			res.getOutputStream().close();
 			return;
@@ -95,12 +96,20 @@ public class ContentServletCall {
 		}
 		log.error("Uncaught $: $", e, root.getClass().getSimpleName(), root.getMessage());
 		if (Str.notBlank(exceptionPath)) {
-			context.getRequest().setAttribute("exception", e);
+			storeExceptionInRequest(context, e);
 			redirect(address, new InternalRedirectException(exceptionPath));
 
 		} else {
 			throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
 		}
+	}
+
+	private void storeExceptionInRequest(RequestContext context, Exception e) {
+		if (context.getException().isPresent()) {
+			log.error("Original Exception not properly handled, aborting redirect loop.", e);
+			throw new RuntimeException(e);
+		}
+		context.getRequest().setAttribute(RequestContext.EXCEPTION_ATTRIBUTE, e);
 	}
 
 	private void redirect(RequestAddress original, RedirectException redirect) throws IOException {

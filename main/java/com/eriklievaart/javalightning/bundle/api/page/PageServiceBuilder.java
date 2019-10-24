@@ -1,5 +1,6 @@
 package com.eriklievaart.javalightning.bundle.api.page;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -27,6 +28,13 @@ public class PageServiceBuilder {
 	 */
 	public RouteBuilder newRoute(String id) {
 		return new RouteBuilder(id, routes);
+	}
+
+	/**
+	 * shorthand for creating a route where the path matches the route id for all HTTP methods.
+	 */
+	public void newIdentityRouteAll(String id, Supplier<PageController> supplier) {
+		newRoute(id).map(id, EnumSet.allOf(RouteType.class), supplier);
 	}
 
 	/**

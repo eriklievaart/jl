@@ -1,5 +1,6 @@
 package com.eriklievaart.javalightning.bundle.api;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -15,8 +16,11 @@ import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
 import com.eriklievaart.javalightning.bundle.route.ContentTypes;
 import com.eriklievaart.osgi.toolkit.api.ContextWrapper;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
+import com.eriklievaart.toolkit.lang.api.collection.OptionalTool;
 
 public class RequestContext {
+	public static final String EXCEPTION_ATTRIBUTE = "com.eriklievaart.javalightning.bundle.api.exception";
+
 	private ResponseBuilder responseBuilder;
 	private HttpServletResponse response;
 	private HttpServletRequest request;
@@ -69,5 +73,9 @@ public class RequestContext {
 
 	public void injectBeanAnnotations(Object object) {
 		new InOutJector(this).injectAnnotatedFields(object);
+	}
+
+	public Optional<Exception> getException() {
+		return OptionalTool.notNull((Exception) request.getAttribute(EXCEPTION_ATTRIBUTE));
 	}
 }

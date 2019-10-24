@@ -23,7 +23,13 @@ public class RuleConfig {
 	}
 
 	public RuleConfig addPattern(String value) {
-		patterns.add(UrlTool.removeLeadingSlashes(value));
+		String noSlash = UrlTool.removeLeadingSlashes(value);
+		if (noSlash.endsWith("~")) {
+			patterns.add(noSlash.replaceFirst("~$", ""));
+			patterns.add(noSlash.replaceFirst("~$", "/*"));
+		} else {
+			patterns.add(noSlash);
+		}
 		return this;
 	}
 
