@@ -11,6 +11,7 @@ import com.eriklievaart.toolkit.lang.api.check.Check;
 public class MockHttpServletResponse extends MockServletResponse implements HttpServletResponse {
 
 	private String redirected;
+	private Integer error;
 
 	@Override
 	public void sendRedirect(String url) throws IOException {
@@ -83,11 +84,13 @@ public class MockHttpServletResponse extends MockServletResponse implements Http
 	}
 
 	@Override
-	public void sendError(int arg0) throws IOException {
+	public void sendError(int code) throws IOException {
+		this.error = code;
 	}
 
 	@Override
-	public void sendError(int arg0, String arg1) throws IOException {
+	public void sendError(int code, String message) throws IOException {
+		this.error = code;
 	}
 
 	@Override
@@ -108,5 +111,9 @@ public class MockHttpServletResponse extends MockServletResponse implements Http
 
 	@Override
 	public void setStatus(int arg0, String arg1) {
+	}
+
+	public void checkSendError(int code) {
+		Check.isEqual(error, code);
 	}
 }

@@ -37,8 +37,8 @@ public class ContentServletCallU {
 		ContentServletCall invocation = new ContentServletCall(beans, req, res);
 
 		invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"), RuleResultType.BLOCK);
-		res.getOutputStream().checkIsClosed();
 		res.getOutputStream().checkNoDataWritten();
+		res.checkSendError(404);
 	}
 
 	@Test

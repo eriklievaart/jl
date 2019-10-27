@@ -43,9 +43,8 @@ public class ContentServletCall {
 		switch (result) {
 
 		case BLOCK:
-			res.sendError(404);
 			log.debug("blocking %", req.getRequestURL());
-			res.getOutputStream().close();
+			res.sendError(404);
 			return;
 
 		case HTTPS:
