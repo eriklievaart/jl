@@ -108,7 +108,7 @@ public abstract class AbstractParameters<V> implements Parameters {
 
 	@Override
 	public Map<String, String> getMap(String... keys) {
-		return MapTool.map(Arrays.asList(keys), this::getString);
+		return MapTool.toMap(Arrays.asList(keys), this::getString);
 	}
 
 	@Override

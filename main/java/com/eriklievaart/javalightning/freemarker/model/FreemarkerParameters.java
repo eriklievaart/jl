@@ -49,6 +49,6 @@ public class FreemarkerParameters {
 	}
 
 	public String forward(String... keys) {
-		return UrlTool.getQueryString(MapTool.map(Arrays.asList(keys), key -> get(key)));
+		return UrlTool.getQueryString(MapTool.toMap(Arrays.asList(keys), key -> get(key)));
 	}
 }
