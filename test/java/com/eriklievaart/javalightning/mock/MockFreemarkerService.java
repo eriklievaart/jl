@@ -1,6 +1,7 @@
 package com.eriklievaart.javalightning.mock;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import com.eriklievaart.javalightning.bundle.api.template.ClasspathTemplateSource;
 import com.eriklievaart.javalightning.bundle.api.template.TemplateGlobal;
@@ -32,6 +33,10 @@ public class MockFreemarkerService {
 
 	public void put(String key, Object value) {
 		model.put(key, value);
+	}
+
+	public void putAll(Map<String, Object> data) {
+		model.putAll(data);
 	}
 
 	public void addParameter(String key, String value) {

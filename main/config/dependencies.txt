@@ -7,6 +7,7 @@ toolkit-io @local @snapshot
 toolkit-lang @local @snapshot
 toolkit-logging @local @snapshot
 toolkit-reflect @local @snapshot
+activation javax.activation 1.1.1
 freemarker org.freemarker 2.3.28
 mail javax.mail 1.4.7
 org.apache.felix.http.api org.apache.felix 3.0.0
