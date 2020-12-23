@@ -62,4 +62,16 @@ public class RuleEngineParserI {
 		RuleEngineParser.parse(Arrays.asList(node)).apply(address);
 		Check.isEqual(address.getPath(), "/elsewhere");
 	}
+
+	@Test
+	public void parseRegexMapping() {
+		IniNode node = new IniNode("map");
+		node.setProperty("path", "/redirect");
+		node.setProperty("regex", "/(r.*)");
+		node.setProperty("to", "/elsewhere/$1");
+
+		RequestAddress address = new RequestAddress(RouteType.GET, "/redirect");
+		RuleEngineParser.parse(Arrays.asList(node)).apply(address);
+		Check.isEqual(address.getPath(), "/elsewhere/redirect");
+	}
 }

@@ -18,6 +18,22 @@ public class RouteIndexU {
 	}
 
 	@Test
+	public void resolveGetTrailingSlash() {
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
+		routes.newRoute("exact").map("bar/exact", RouteType.GET, () -> new DummyPageController());
+		RouteIndex index = new RouteIndex(routes.createPageService("foo"));
+		Check.isTrue(index.resolve(RouteType.GET, "bar/exact/").isPresent());
+	}
+
+	@Test
+	public void resolveRegisterTrailingSlash() {
+		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
+		routes.newRoute("exact").map("bar/exact", RouteType.GET, () -> new DummyPageController());
+		RouteIndex index = new RouteIndex(routes.createPageService("foo"));
+		Check.isTrue(index.resolve(RouteType.GET, "bar/exact/").isPresent());
+	}
+
+	@Test
 	public void resolveNoMatch() {
 		PageServiceBuilder routes = AccessiblePageServiceBuilder.instance();
 		routes.newRoute("exact").map("bar/exact", RouteType.GET, () -> new DummyPageController());

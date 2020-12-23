@@ -19,6 +19,7 @@ import com.eriklievaart.toolkit.io.api.ResourceTool;
 import com.eriklievaart.toolkit.io.api.UrlTool;
 import com.eriklievaart.toolkit.io.api.ini.IniNodeIO;
 import com.eriklievaart.toolkit.lang.api.str.Str;
+import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class Activator extends ActivatorWrapper {
 	private static final String HOST = "com.eriklievaart.javalightning.bundle.host";
@@ -26,6 +27,8 @@ public class Activator extends ActivatorWrapper {
 	private static final String SERVLET_PREFIX = "com.eriklievaart.javalightning.bundle.servlet_prefix";
 	private static final String EXCEPTION_REDIRECT = "com.eriklievaart.javalightning.bundle.exception.redirect";
 	private static final String RULES = "com.eriklievaart.javalightning.bundle.rules";
+
+	private LogTemplate log = new LogTemplate(getClass());
 
 	@Override
 	public void init(BundleContext context) throws Exception {
@@ -54,9 +57,11 @@ public class Activator extends ActivatorWrapper {
 	private RuleEngine createRulesEngine(ContextWrapper wrapper) {
 		String config = wrapper.getPropertyString(RULES, "");
 		if (Str.isBlank(config)) {
+			log.info("using default rules, override with osgi property %", RULES);
 			String path = "/bundle/rules-defaults.ini";
 			return RuleEngineParser.parse(IniNodeIO.read(ResourceTool.getInputStream(getClass(), path)));
 		} else {
+			log.info("loading rules from: $", config);
 			return RuleEngineParser.parse(IniNodeIO.read(new File(config)));
 		}
 	}

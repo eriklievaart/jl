@@ -37,7 +37,14 @@ public class RuleEngineParser {
 		for (IniNode node : nodes) {
 			if (node.getName().equals("map")) {
 				RuleConfig config = parseConfig(node);
-				mappings.add(new MapRule(config, node.getProperty("to")));
+				String to = node.getProperty("to");
+				if (node.hasProperty("regex")) {
+					mappings.add(new MapRule(config, address -> {
+						address.setPath(address.getPath().replaceAll(node.getProperty("regex"), to));
+					}));
+				} else {
+					mappings.add(new MapRule(config, address -> address.setPath(to)));
+				}
 			}
 		}
 		return mappings;

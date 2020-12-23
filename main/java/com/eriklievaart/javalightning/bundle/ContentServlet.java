@@ -69,13 +69,18 @@ public class ContentServlet extends HttpServlet {
 
 			RequestAddress address = new RequestAddress(req);
 			RuleResultType result = rules.apply(address);
+			log.trace("rules applied: $ -> $", url, address);
 			new ContentServletCall(beans, req, res).render(address, result);
 
 		} finally {
-			long spent = System.currentTimeMillis() - start;
-			if (spent > 100) {
-				log.debug("spent $ms on url %", spent, url);
-			}
+			trace(start, url);
+		}
+	}
+
+	private void trace(long start, String url) {
+		long spent = System.currentTimeMillis() - start;
+		if (spent > 100) {
+			log.debug("spent $ms on url %", spent, url);
 		}
 	}
 }

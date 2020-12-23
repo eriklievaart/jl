@@ -11,10 +11,8 @@ import javax.servlet.http.HttpSession;
 import com.eriklievaart.javalightning.bundle.api.Bean;
 import com.eriklievaart.javalightning.bundle.api.Parameters;
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
-import com.eriklievaart.javalightning.bundle.api.osgi.Service;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
 import com.eriklievaart.toolkit.bean.api.BeanInjector;
-import com.eriklievaart.toolkit.lang.api.FormattedException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 import com.eriklievaart.toolkit.reflect.api.FieldTool;
@@ -49,9 +47,6 @@ public class InOutJector {
 		Class<?> type = instance.getClass();
 		for (AnnotatedField<Bean> field : AnnotationTool.getFieldsAnnotatedWith(type, Bean.class)) {
 			field.inject(instance, createArgument(field.getMember()));
-		}
-		for (AnnotatedField<Service> field : AnnotationTool.getFieldsAnnotatedWith(type, Service.class)) {
-			throw new FormattedException("OSGI: $", field.getMember());
 		}
 	}
 

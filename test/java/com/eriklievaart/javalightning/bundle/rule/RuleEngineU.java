@@ -12,7 +12,7 @@ public class RuleEngineU {
 	@Test
 	public void map() {
 		RuleConfig config = new RuleConfig().addPath("remap");
-		RuleEngine engine = createEngine(new MapRule(config, "home"));
+		RuleEngine engine = createEngine(new MapRule(config, address -> address.setPath("home")));
 
 		RequestAddress address = new RequestAddress(RouteType.GET, "remap");
 		engine.apply(address);
@@ -20,9 +20,29 @@ public class RuleEngineU {
 	}
 
 	@Test
+	public void mapTrailingSlash() {
+		RuleConfig config = new RuleConfig().addPath("remap/");
+		RuleEngine engine = createEngine(new MapRule(config, address -> address.setPath("home")));
+
+		RequestAddress address = new RequestAddress(RouteType.GET, "remap");
+		engine.apply(address);
+		Check.isEqual(address.getPath(), "home");
+	}
+
+	@Test
+	public void mapResolveSlash() {
+		RuleConfig config = new RuleConfig().addPath("remap");
+		RuleEngine engine = createEngine(new MapRule(config, address -> address.setPath("home")));
+
+		RequestAddress address = new RequestAddress(RouteType.GET, "remap/");
+		engine.apply(address);
+		Check.isEqual(address.getPath(), "home");
+	}
+
+	@Test
 	public void mapIgnore() {
 		RuleConfig config = new RuleConfig().addPath("remap");
-		RuleEngine engine = createEngine(new MapRule(config, "home"));
+		RuleEngine engine = createEngine(new MapRule(config, address -> address.setPath("home")));
 
 		RequestAddress address = new RequestAddress(RouteType.GET, "ignore");
 		engine.apply(address);
@@ -115,7 +135,7 @@ public class RuleEngineU {
 	public void mapAndAllow() {
 		RuleConfig config = new RuleConfig().addPath("remap");
 		AllowRule rules = new AllowRule(new RuleConfig());
-		MapRule map = new MapRule(config, "home");
+		MapRule map = new MapRule(config, address -> address.setPath("home"));
 		RuleEngine engine = createEngine(rules, map);
 
 		RequestAddress address = new RequestAddress(RouteType.GET, "remap");

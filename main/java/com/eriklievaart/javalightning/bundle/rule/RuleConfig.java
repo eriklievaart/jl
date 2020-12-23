@@ -3,6 +3,7 @@ package com.eriklievaart.javalightning.bundle.rule;
 import java.util.List;
 
 import com.eriklievaart.toolkit.io.api.UrlTool;
+import com.eriklievaart.toolkit.lang.api.ToString;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 import com.eriklievaart.toolkit.lang.api.pattern.WildcardTool;
 
@@ -18,7 +19,7 @@ public class RuleConfig {
 	}
 
 	public RuleConfig addPath(String value) {
-		paths.add(UrlTool.removeLeadingSlashes(value));
+		paths.add(UrlTool.removeLeadingSlashes(UrlTool.removeTrailingSlash(value)));
 		return this;
 	}
 
@@ -40,7 +41,7 @@ public class RuleConfig {
 		if (paths.isEmpty() && patterns.isEmpty()) {
 			return true;
 		}
-		String requestPath = UrlTool.removeLeadingSlashes(address.getPath());
+		String requestPath = UrlTool.removeLeadingSlashes(UrlTool.removeTrailingSlash(address.getPath()));
 		for (String path : paths) {
 			if (requestPath.equals(path)) {
 				return true;
@@ -72,5 +73,10 @@ public class RuleConfig {
 
 	private boolean isIp(String domain) {
 		return domain.matches("^\\d++[.]\\d++[.]\\d++[.]\\d++(:\\d++)?");
+	}
+
+	@Override
+	public String toString() {
+		return ToString.simple(this, "$$$", paths, patterns);
 	}
 }

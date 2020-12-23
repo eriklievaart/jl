@@ -28,17 +28,19 @@ public class FreemarkerTemplateService implements TemplateService {
 		if (log.isTraceEnabled()) {
 			data.forEach((k, v) -> log.trace("template param % -> %", k, v));
 		}
-		data.putIfAbsent("lightning", new Lightning(context));
-		data.putIfAbsent("globals", beans.getInjectedGlobals(context));
-		data.putIfAbsent("parameter", new FreemarkerParameters(context.getParameterSupplier()));
-
-		StringWriter writer = new StringWriter();
+		if (context != null) {
+			data.putIfAbsent("lightning", new Lightning(context));
+			data.putIfAbsent("globals", beans.getInjectedGlobals(context));
+			data.putIfAbsent("parameter", new FreemarkerParameters(context.getParameterSupplier()));
+		}
 		try {
+			StringWriter writer = new StringWriter();
 			Template template = beans.getCachedConfiguration().getTemplate(view);
 			template.process(data, writer);
+			return StreamTool.toInputStream(writer.getBuffer().toString());
+
 		} catch (Exception e) {
 			throw new FormattedException("Unable to render template %; $", e, view, e.getMessage());
 		}
-		return StreamTool.toInputStream(writer.getBuffer().toString());
 	}
 }
