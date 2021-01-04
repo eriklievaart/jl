@@ -78,9 +78,8 @@ public class PageServiceIndexU {
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> controller);
 		index.register(routes.createPageService("/service"));
 
-		BombSquad.diffuse(AssertionException.class, "Missing service", () -> {
-			index.resolve(RouteType.GET, "/service/suffix/");
-		});
+		Optional<SecureRoute> optional = index.resolve(RouteType.GET, "/service/suffix/");
+		Check.isFalse(optional.isPresent());
 	}
 
 	@Test
@@ -138,9 +137,8 @@ public class PageServiceIndexU {
 	@Test
 	public void resolveServiceDoesNotExist() {
 		PageServiceIndex index = new PageServiceIndex();
-		BombSquad.diffuse(AssertionException.class, "Missing service", () -> {
-			index.resolve(RouteType.GET, "/service/");
-		});
+		Optional<SecureRoute> optional = index.resolve(RouteType.GET, "/service/");
+		Check.isFalse(optional.isPresent());
 	}
 
 	@Test
@@ -152,8 +150,8 @@ public class PageServiceIndexU {
 		routes.newRoute("suffix").map("suffix", RouteType.GET, () -> controller);
 		index.register(routes.createPageService("service"));
 
-		Optional<SecureRoute> resolved = index.resolve(RouteType.GET, "/service/other/");
-		Check.isFalse(resolved.isPresent());
+		Optional<SecureRoute> optional = index.resolve(RouteType.GET, "/service/other/");
+		Check.isFalse(optional.isPresent());
 	}
 
 	@Test

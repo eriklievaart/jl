@@ -7,10 +7,8 @@ import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 import com.eriklievaart.javalightning.bundle.api.render.TemplateRenderer;
 import com.eriklievaart.toolkit.lang.api.check.CheckStr;
 import com.eriklievaart.toolkit.lang.api.str.Str;
-import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public abstract class AbstractTemplateController implements PageController {
-	protected LogTemplate log = new LogTemplate(getClass());
 
 	private ResponseBuilder response;
 	protected final Map<String, Object> model = new Hashtable<>();

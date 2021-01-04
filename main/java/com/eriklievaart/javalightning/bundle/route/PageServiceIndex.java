@@ -14,7 +14,6 @@ import com.eriklievaart.javalightning.bundle.api.page.Route;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
 import com.eriklievaart.osgi.toolkit.api.listener.SimpleServiceListener;
 import com.eriklievaart.toolkit.io.api.UrlTool;
-import com.eriklievaart.toolkit.lang.api.AssertionException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.check.CheckCollection;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
@@ -75,7 +74,8 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 		String service = UrlTool.removeTrailingSlash(UrlTool.getHead(skipPrefix));
 		Check.notNull(service, "requested URL does not start with a service %", path);
 		if (!services.containsKey(service)) {
-			throw new AssertionException("Cannot resolve rout! Missing service % $", service, listServices());
+			log.warn("unknown service $:$", method, path);
+			return Optional.empty();
 		}
 		return services.get(service).resolve(method, UrlTool.getTail(skipPrefix));
 	}

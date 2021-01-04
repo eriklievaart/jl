@@ -60,21 +60,28 @@ public class ContentServlet extends HttpServlet {
 
 	private void invoke(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		long start = System.currentTimeMillis();
-		String url = req.getRequestURL().toString();
+		log.debug("received request for url %", req.getRequestURL().toString());
+
+		req.setCharacterEncoding("UTF-8");
+		res.setCharacterEncoding("UTF-8");
 
 		try {
-			log.debug("received request for url %", url);
-			req.setCharacterEncoding("UTF-8");
-			res.setCharacterEncoding("UTF-8");
-
 			RequestAddress address = new RequestAddress(req);
-			RuleResultType result = rules.apply(address);
-			log.trace("rules applied: $ -> $", url, address);
+			RuleResultType result = applyRules(req, address);
 			new ContentServletCall(beans, req, res).render(address, result);
 
 		} finally {
-			trace(start, url);
+			trace(start, req.getRequestURI());
 		}
+	}
+
+	private RuleResultType applyRules(HttpServletRequest req, RequestAddress address) {
+		RuleResultType result = rules.apply(address);
+		if (result != RuleResultType.BLOCK) {
+			log.debug("rules applied: $ -> $", req.getRequestURI(), address);
+		}
+		req.setAttribute("path", address.getPath());
+		return result;
 	}
 
 	private void trace(long start, String url) {

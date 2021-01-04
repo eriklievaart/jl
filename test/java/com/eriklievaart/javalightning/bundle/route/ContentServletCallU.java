@@ -21,7 +21,6 @@ import com.eriklievaart.javalightning.bundle.rule.RuleResultType;
 import com.eriklievaart.javalightning.mock.MockHttpServletRequest;
 import com.eriklievaart.javalightning.mock.MockHttpServletResponse;
 import com.eriklievaart.javalightning.mock.MockRequestContext;
-import com.eriklievaart.toolkit.lang.api.FormattedException;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.mock.BombSquad;
 
@@ -160,10 +159,10 @@ public class ContentServletCallU {
 		MvcBeans beans = new MvcBeans();
 		beans.setServletPrefix("mvc");
 		HttpServletRequest request = new MockHttpServletRequest();
-		ContentServletCall invocation = new ContentServletCall(beans, request, null);
+		HttpServletResponse response = new MockHttpServletResponse();
+		ContentServletCall invocation = new ContentServletCall(beans, request, response);
 
-		BombSquad.diffuse(FormattedException.class, "Missing service", () -> {
-			invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"));
-		});
+		invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"));
+		Check.isEqual(response.getStatus(), 404);
 	}
 }

@@ -12,6 +12,7 @@ public class MockHttpServletResponse extends MockServletResponse implements Http
 
 	private String redirected;
 	private Integer error;
+	private int status = 0;
 
 	@Override
 	public void sendRedirect(String url) throws IOException {
@@ -80,7 +81,7 @@ public class MockHttpServletResponse extends MockServletResponse implements Http
 
 	@Override
 	public int getStatus() {
-		return 0;
+		return status;
 	}
 
 	@Override
@@ -106,11 +107,13 @@ public class MockHttpServletResponse extends MockServletResponse implements Http
 	}
 
 	@Override
-	public void setStatus(int arg0) {
+	public void setStatus(int value) {
+		status = value;
 	}
 
 	@Override
-	public void setStatus(int arg0, String arg1) {
+	public void setStatus(int value, String message) {
+		status = value;
 	}
 
 	public void checkSendError(int code) {

@@ -1,6 +1,5 @@
 package com.eriklievaart.javalightning.bundle;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -84,7 +83,7 @@ public class ContentServletCall {
 		String exceptionPath = beans.getPageServiceIndex().getExceptionRedirect();
 
 		if (root instanceof RouteNotAccessibleException) {
-			log.debug("access denied for % on %", req.getRemoteHost(), req.getRequestURL());
+			log.debug("access denied for % on $:$", req.getRemoteHost(), address.getMethod(), req.getRequestURL());
 			res.setStatus(404);
 			return;
 
@@ -128,7 +127,7 @@ public class ContentServletCall {
 
 		Optional<SecureRoute> optional = index.resolve(address.getMethod(), address.getPath());
 		if (!optional.isPresent()) {
-			throw new FileNotFoundException(Str.sub("no controller for uri $ $", address, index.listServices()));
+			throw new RouteNotAccessibleException();
 		}
 		SecureRoute route = optional.get();
 		route.validate(context);
