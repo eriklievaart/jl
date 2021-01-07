@@ -3,7 +3,7 @@ package com.eriklievaart.javalightning.bundle.api.page;
 import java.util.Map;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
-import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
+import com.eriklievaart.javalightning.bundle.api.exception.NotFound404Exception;
 
 public interface RouteService {
 
@@ -11,12 +11,12 @@ public interface RouteService {
 
 	public String getHost();
 
-	public boolean isAccessible(String service, String route, RequestContext context) throws RouteUnavailableException;
+	public boolean isAccessible(String service, String route, RequestContext context) throws NotFound404Exception;
 
-	public Route getRoute(String service, String route) throws RouteUnavailableException;
+	public Route getRoute(String service, String route) throws NotFound404Exception;
 
-	public String getRemotePath(String service, String route) throws RouteUnavailableException;
+	public String getRemotePath(String service, String route) throws NotFound404Exception;
 
 	public String getRemotePath(String service, String route, Map<String, String> params)
-			throws RouteUnavailableException;
+			throws NotFound404Exception;
 }

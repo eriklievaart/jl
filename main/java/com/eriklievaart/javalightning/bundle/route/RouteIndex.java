@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
-import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
+import com.eriklievaart.javalightning.bundle.api.exception.NotFound404Exception;
 import com.eriklievaart.javalightning.bundle.api.page.PageSecurity;
 import com.eriklievaart.javalightning.bundle.api.page.PageService;
 import com.eriklievaart.javalightning.bundle.api.page.Route;
@@ -75,17 +75,17 @@ public class RouteIndex {
 		return Str.sub("$:$", method, path == null ? "" : path);
 	}
 
-	public Route getRoute(String routeId) throws RouteUnavailableException {
+	public Route getRoute(String routeId) throws NotFound404Exception {
 		Route route = idToRoute.get(routeId);
 		if (route == null) {
-			throw new RouteUnavailableException(getUnavailableMessage(routeId));
+			throw new NotFound404Exception(getUnavailableMessage(routeId));
 		}
 		return route;
 	}
 
-	boolean isAccessible(String routeId, RequestContext context) throws RouteUnavailableException {
+	boolean isAccessible(String routeId, RequestContext context) throws NotFound404Exception {
 		if (!idToRoute.containsKey(routeId)) {
-			throw new RouteUnavailableException(getUnavailableMessage(routeId));
+			throw new NotFound404Exception(getUnavailableMessage(routeId));
 		}
 		return security.test(idToRoute.get(routeId), context);
 	}

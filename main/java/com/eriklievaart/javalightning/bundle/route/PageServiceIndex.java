@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
-import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
+import com.eriklievaart.javalightning.bundle.api.exception.NotFound404Exception;
 import com.eriklievaart.javalightning.bundle.api.osgi.JavalightningId;
 import com.eriklievaart.javalightning.bundle.api.page.PageService;
 import com.eriklievaart.javalightning.bundle.api.page.Route;
@@ -88,20 +88,20 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 		return services.keySet();
 	}
 
-	public Route getRoute(String service, String route) throws RouteUnavailableException {
+	public Route getRoute(String service, String route) throws NotFound404Exception {
 		RouteIndex index = services.get(service);
 		if (index == null) {
-			throw new RouteUnavailableException("Missing service %", service);
+			throw new NotFound404Exception("missing service %", service);
 		}
 		return index.getRoute(route);
 	}
 
-	public String getRemotePath(String service, String route) throws RouteUnavailableException {
+	public String getRemotePath(String service, String route) throws NotFound404Exception {
 		String path = UrlTool.append(prefixReference.get(), service, getRoute(service, route).getPath());
 		return path.startsWith("/") ? path : "/" + path;
 	}
 
-	public boolean isAccessible(String service, String route, RequestContext context) throws RouteUnavailableException {
+	public boolean isAccessible(String service, String route, RequestContext context) throws NotFound404Exception {
 		CheckCollection.isPresent(services, service, "missing service % for route %", service, route);
 		return services.get(service).isAccessible(route, context);
 	}

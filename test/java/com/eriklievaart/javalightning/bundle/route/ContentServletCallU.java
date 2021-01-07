@@ -12,6 +12,7 @@ import com.eriklievaart.javalightning.bundle.MvcBeans;
 import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
 import com.eriklievaart.javalightning.bundle.api.exception.ExternalRedirectException;
 import com.eriklievaart.javalightning.bundle.api.exception.InternalRedirectException;
+import com.eriklievaart.javalightning.bundle.api.exception.NotFound404Exception;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.page.PageSecurity;
 import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
@@ -130,7 +131,7 @@ public class ContentServletCallU {
 		routes.setSecurity(new PageSecurity((a, b) -> false));
 		beans.getPageServiceIndex().register(routes.createPageService("foo"));
 
-		BombSquad.diffuse(RouteNotAccessibleException.class, "not accessible", () -> {
+		BombSquad.diffuse(NotFound404Exception.class, () -> {
 			invocation.invoke(new RequestAddress(RouteType.GET, "/mvc/foo/bar"), new MockRequestContext());
 		});
 	}

@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.junit.Test;
 
 import com.eriklievaart.javalightning.bundle.api.ResponseBuilder;
-import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
+import com.eriklievaart.javalightning.bundle.api.exception.NotFound404Exception;
 import com.eriklievaart.javalightning.bundle.api.page.PageSecurity;
 import com.eriklievaart.javalightning.bundle.api.page.PageServiceBuilder;
 import com.eriklievaart.javalightning.bundle.api.page.RouteType;
@@ -51,7 +51,7 @@ public class PageServiceIndexU {
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
 		index.register(routes.createPageService("service"));
 
-		BombSquad.diffuse(RouteUnavailableException.class, "Missing service `idonotexist`", () -> {
+		BombSquad.diffuse(NotFound404Exception.class, "Missing service `idonotexist`", () -> {
 			index.getRemotePath("idonotexist", "suffix");
 		});
 	}
@@ -64,7 +64,7 @@ public class PageServiceIndexU {
 		routes.newRoute("suffix").map("/suffix/", RouteType.GET, () -> new DummyPageController());
 		index.register(routes.createPageService("service"));
 
-		BombSquad.diffuse(RouteUnavailableException.class, "No route with id `idonotexist`", () -> {
+		BombSquad.diffuse(NotFound404Exception.class, "No route with id `idonotexist`", () -> {
 			index.getRemotePath("service", "idonotexist");
 		});
 	}

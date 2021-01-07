@@ -3,7 +3,7 @@ package com.eriklievaart.javalightning.freemarker.model;
 import java.util.Map;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
-import com.eriklievaart.javalightning.bundle.api.exception.RouteUnavailableException;
+import com.eriklievaart.javalightning.bundle.api.exception.NotFound404Exception;
 import com.eriklievaart.javalightning.bundle.api.page.RouteService;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
@@ -21,7 +21,7 @@ public class Lightning {
 		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
 			try {
 				return s.getRemotePath(service, route);
-			} catch (RouteUnavailableException e) {
+			} catch (NotFound404Exception e) {
 				throw new RuntimeException(e.getMessage(), e);
 			}
 		});
@@ -32,7 +32,7 @@ public class Lightning {
 		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
 			try {
 				return s.getRemotePath(service, route, parameters);
-			} catch (RouteUnavailableException e) {
+			} catch (NotFound404Exception e) {
 				throw new RuntimeException(e.getMessage(), e);
 			}
 		});
@@ -43,7 +43,7 @@ public class Lightning {
 			try {
 				return s.isAccessible(service, route, context);
 
-			} catch (RouteUnavailableException e) {
+			} catch (NotFound404Exception e) {
 				log.warn("Unable to find route $:$", service, route);
 				return false;
 			}

@@ -3,7 +3,7 @@ package com.eriklievaart.javalightning.bundle.api.page;
 import java.util.function.BiPredicate;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
-import com.eriklievaart.javalightning.bundle.route.RouteNotAccessibleException;
+import com.eriklievaart.javalightning.bundle.api.exception.NotFound404Exception;
 import com.eriklievaart.toolkit.lang.api.function.TryRunnable;
 
 public class PageSecurity {
@@ -13,7 +13,7 @@ public class PageSecurity {
 
 	public PageSecurity(BiPredicate<Route, RequestContext> accessible) {
 		this(accessible, () -> {
-			throw new RouteNotAccessibleException();
+			throw new NotFound404Exception("access denied for");
 		});
 	}
 

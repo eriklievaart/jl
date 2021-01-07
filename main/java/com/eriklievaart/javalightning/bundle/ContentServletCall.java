@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.exception.InternalRedirectException;
+import com.eriklievaart.javalightning.bundle.api.exception.NotFound404Exception;
 import com.eriklievaart.javalightning.bundle.api.exception.RedirectException;
 import com.eriklievaart.javalightning.bundle.api.page.PageController;
 import com.eriklievaart.javalightning.bundle.api.render.ServletReponseRenderer;
 import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
 import com.eriklievaart.javalightning.bundle.route.PageServiceIndex;
-import com.eriklievaart.javalightning.bundle.route.RouteNotAccessibleException;
 import com.eriklievaart.javalightning.bundle.route.SecureRoute;
 import com.eriklievaart.javalightning.bundle.rule.RequestAddress;
 import com.eriklievaart.javalightning.bundle.rule.RuleResultType;
@@ -82,15 +82,14 @@ public class ContentServletCall {
 		Throwable root = ThrowableTool.getRootCause(e);
 		String exceptionPath = beans.getPageServiceIndex().getExceptionRedirect();
 
-		if (root instanceof RouteNotAccessibleException) {
-			log.debug("access denied for % on $:$", req.getRemoteHost(), address.getMethod(), req.getRequestURL());
+		if (root instanceof NotFound404Exception) {
+			log.debug("$:$ $ %", address.getMethod(), req.getRequestURL(), root.getMessage(), req.getRemoteHost());
 			res.setStatus(404);
 			return;
 
 		} else if (root instanceof RedirectException) {
 			redirect(address, (RedirectException) root);
 			return;
-
 		}
 		log.error("Uncaught $: $", e, root.getClass().getSimpleName(), root.getMessage());
 		if (Str.notBlank(exceptionPath)) {
@@ -127,7 +126,7 @@ public class ContentServletCall {
 
 		Optional<SecureRoute> optional = index.resolve(address.getMethod(), address.getPath());
 		if (!optional.isPresent()) {
-			throw new RouteNotAccessibleException();
+			throw new NotFound404Exception();
 		}
 		SecureRoute route = optional.get();
 		route.validate(context);
