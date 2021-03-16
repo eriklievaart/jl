@@ -66,7 +66,7 @@ public class RouteIndex {
 				return Optional.of(new SecureRoute(route, security));
 			}
 		}
-		log.warn("no controller for path $:$ $", method, path, pathToRoute.keySet());
+		log.debug("no controller for path $:$ $", method, path, pathToRoute.keySet());
 		return Optional.empty();
 	}
 

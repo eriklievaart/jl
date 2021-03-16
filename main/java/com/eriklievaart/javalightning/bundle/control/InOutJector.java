@@ -11,15 +11,25 @@ import javax.servlet.http.HttpSession;
 import com.eriklievaart.javalightning.bundle.api.Bean;
 import com.eriklievaart.javalightning.bundle.api.Parameters;
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
+import com.eriklievaart.javalightning.bundle.api.Singleton;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
 import com.eriklievaart.toolkit.bean.api.BeanInjector;
 import com.eriklievaart.toolkit.lang.api.check.Check;
+import com.eriklievaart.toolkit.lang.api.collection.LazyMap;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 import com.eriklievaart.toolkit.reflect.api.FieldTool;
 import com.eriklievaart.toolkit.reflect.api.annotations.AnnotatedField;
 import com.eriklievaart.toolkit.reflect.api.annotations.AnnotationTool;
 
 public class InOutJector {
+
+	private static final LazyMap<Class<?>, Object> SINGLETONS = new LazyMap<>(clz -> {
+		try {
+			return clz.getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	});
 
 	private Map<Class<?>, Function<Field, ?>> suppliers = NewCollection.map();
 	private RequestContext context;
@@ -51,8 +61,22 @@ public class InOutJector {
 	}
 
 	private Object createArgument(Field field) {
+		if (suppliers.containsKey(field.getType())) {
+			return createPredefinedType(field);
+		} else {
+			return createSingleton(field);
+		}
+	}
+
+	private Object createSingleton(Field field) {
+		boolean test = AnnotationTool.literalHasAnnotation(field.getType(), Singleton.class);
+		String msg = "Cannot inject type $ into $! Annotate type with @Singleton or use one of predefined types: $";
+		Check.isTrue(test, msg, field.getType(), field.getDeclaringClass(), suppliers.keySet());
+		return SINGLETONS.get(field.getType());
+	}
+
+	private Object createPredefinedType(Field field) {
 		Function<Field, ?> supplier = suppliers.get(field.getType());
-		Check.notNull(supplier, "Cannot inject type $ into $", field.getType(), field.getDeclaringClass());
 		Object result = supplier.apply(field);
 		Check.isInstance(field.getType(), result);
 		return result;

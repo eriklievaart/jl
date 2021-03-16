@@ -74,7 +74,7 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 		String service = UrlTool.removeTrailingSlash(UrlTool.getHead(skipPrefix));
 		Check.notNull(service, "requested URL does not start with a service %", path);
 		if (!services.containsKey(service)) {
-			log.warn("unknown service $:$", method, path);
+			log.debug("unknown service $:$", method, path);
 			return Optional.empty();
 		}
 		return services.get(service).resolve(method, UrlTool.getTail(skipPrefix));

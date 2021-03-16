@@ -28,6 +28,10 @@ public class RouteBuilder {
 		map(path, EnumSet.of(RouteType.GET, RouteType.POST), supplier);
 	}
 
+	public void mapAll(String path, Supplier<PageController> supplier) {
+		map(path, EnumSet.allOf(RouteType.class), supplier);
+	}
+
 	public void map(String path, RouteType method, Supplier<PageController> supplier) {
 		map(path, EnumSet.of(method), supplier);
 	}
