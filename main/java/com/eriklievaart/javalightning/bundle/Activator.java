@@ -56,13 +56,20 @@ public class Activator extends ActivatorWrapper {
 
 	private RuleEngine createRulesEngine(ContextWrapper wrapper) {
 		String config = wrapper.getPropertyString(RULES, "");
-		if (Str.isBlank(config)) {
-			log.info("using default rules, override with osgi property %", RULES);
+
+		if (Str.notBlank(config)) {
+			log.info("loading rules from $ as configured per osgi property %", config, RULES);
+			return RuleEngineParser.parse(IniNodeIO.read(new File(config)));
+
+		} else if (wrapper.getProjectFile("rules.ini").isFile()) {
+			File file = wrapper.getProjectFile("rules.ini");
+			log.info("Local rules.ini found! Loading rules from $", file);
+			return RuleEngineParser.parse(IniNodeIO.read(file));
+
+		} else {
+			log.info("Using default rules, override with osgi property %", RULES);
 			String path = "/bundle/rules-defaults.ini";
 			return RuleEngineParser.parse(IniNodeIO.read(ResourceTool.getInputStream(getClass(), path)));
-		} else {
-			log.info("loading rules from: $", config);
-			return RuleEngineParser.parse(IniNodeIO.read(new File(config)));
 		}
 	}
 }
