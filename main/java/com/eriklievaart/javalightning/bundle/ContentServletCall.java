@@ -74,8 +74,18 @@ public class ContentServletCall {
 			}
 
 		} catch (Exception e) {
-			handleException(address, context, e);
+			if (!ignoreException(e)) {
+				handleException(address, context, e);
+			}
 		}
+	}
+
+	private boolean ignoreException(Exception e) {
+		Throwable root = ThrowableTool.getRootCause(e);
+		if (root instanceof IOException && Str.isEqualIgnoreCase(root.getMessage(), "broken pipe")) {
+			return true;
+		}
+		return false;
 	}
 
 	private void handleException(RequestAddress address, RequestContext context, Exception e) throws IOException {
