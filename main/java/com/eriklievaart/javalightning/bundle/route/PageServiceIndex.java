@@ -51,7 +51,7 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 	@Override
 	public void register(PageService service) {
 		try {
-			log.info("registering PageService[$]: $", service.getPrefix(), service.getClass());
+			log.info("registering PageService[$]", service.getPrefix());
 			String prefix = service.getPrefix();
 			JavalightningId.validateSyntax(prefix);
 

@@ -7,6 +7,8 @@ import com.eriklievaart.javalightning.bundle.api.template.TemplateSource;
 import com.eriklievaart.osgi.toolkit.api.ActivatorWrapper;
 
 public class Activator extends ActivatorWrapper {
+	public static final String TEMPLATE_TIMEOUT_PROPERTY = "com.eriklievaart.javalightning.freemarker.timeout";
+	public static final String TEMPLATE_PATH_PROPERTY = "com.eriklievaart.javalightning.freemarker.path";
 
 	@Override
 	public void init(BundleContext context) throws Exception {

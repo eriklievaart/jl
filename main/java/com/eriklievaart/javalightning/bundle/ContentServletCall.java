@@ -43,7 +43,7 @@ public class ContentServletCall {
 
 		case BLOCK:
 			log.debug("blocking %", req.getRequestURL());
-			res.sendError(404);
+			sendError(403, "forbidden");
 			return;
 
 		case HTTPS:
@@ -94,7 +94,7 @@ public class ContentServletCall {
 
 		if (root instanceof NotFound404Exception) {
 			log.debug("$:$ $ %", address.getMethod(), req.getRequestURL(), root.getMessage(), req.getRemoteHost());
-			res.setStatus(404);
+			sendError(404, "not found");
 			return;
 
 		} else if (root instanceof RedirectException) {
@@ -108,6 +108,14 @@ public class ContentServletCall {
 
 		} else {
 			throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
+		}
+	}
+
+	private void sendError(int status, String message) {
+		try {
+			res.sendError(status, message);
+		} catch (IOException e) {
+			log.debug(e);
 		}
 	}
 

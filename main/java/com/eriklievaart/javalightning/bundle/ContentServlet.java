@@ -3,16 +3,18 @@ package com.eriklievaart.javalightning.bundle;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
 import com.eriklievaart.javalightning.bundle.rule.RequestAddress;
 import com.eriklievaart.javalightning.bundle.rule.RuleEngine;
 import com.eriklievaart.javalightning.bundle.rule.RuleResultType;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
-public class ContentServlet extends HttpServlet {
+public class ContentServlet extends WebSocketServlet {
 	private LogTemplate log = new LogTemplate(getClass());
 
 	private MvcBeans beans;
@@ -58,9 +60,14 @@ public class ContentServlet extends HttpServlet {
 		invoke(req, res);
 	}
 
+	@Override
+	public void configure(WebSocketServletFactory factory) {
+		factory.setCreator(new ContentWebSocketCreator(beans));
+	}
+
 	private void invoke(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		long start = System.currentTimeMillis();
-		log.debug("received request for url %", req.getRequestURL().toString());
+		log.debug("received request for url % from $", req.getRequestURL().toString(), req.getRemoteAddr());
 
 		req.setCharacterEncoding("UTF-8");
 		res.setCharacterEncoding("UTF-8");

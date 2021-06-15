@@ -37,8 +37,7 @@ public class ContentServletCallU {
 		ContentServletCall invocation = new ContentServletCall(beans, req, res);
 
 		invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"), RuleResultType.BLOCK);
-		res.getOutputStream().checkNoDataWritten();
-		res.checkSendError(404);
+		res.checkSendError(403);
 	}
 
 	@Test
@@ -50,7 +49,7 @@ public class ContentServletCallU {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		ContentServletCall invocation = new ContentServletCall(beans, req, res);
 
-		req.setUrl("http://secure.com/path");
+		req.setRequestUrl("http://secure.com/path");
 		invocation.render(new RequestAddress(RouteType.GET, "secure.com", "path"), RuleResultType.HTTPS);
 		res.checkIsRedirectedTo("https://secure.com/path");
 	}
@@ -160,10 +159,10 @@ public class ContentServletCallU {
 		MvcBeans beans = new MvcBeans();
 		beans.setServletPrefix("mvc");
 		HttpServletRequest request = new MockHttpServletRequest();
-		HttpServletResponse response = new MockHttpServletResponse();
+		MockHttpServletResponse response = new MockHttpServletResponse();
 		ContentServletCall invocation = new ContentServletCall(beans, request, response);
 
 		invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"));
-		Check.isEqual(response.getStatus(), 404);
+		response.checkSendError(404);
 	}
 }

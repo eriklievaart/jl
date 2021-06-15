@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.javalightning.bundle.api.template.TemplateService;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
@@ -34,12 +36,15 @@ public class TemplateRenderer implements ServletReponseRenderer {
 	public void render(RequestContext context) throws IOException {
 		log.debug("rendering template %", resource);
 		ServiceCollection<TemplateService> service = context.getServiceCollection(TemplateService.class);
+		HttpServletResponse reponse = context.getResponse();
 		InputStream is = service.oneReturns(s -> s.render(resource, model, context));
+
 		int status = context.getResponseBuilder().getStatusCode();
 		log.trace("% status %", resource, status);
-		context.getResponse().setStatus(status);
-		context.getResponseBuilder().getHeaders().forEach((k, v) -> context.getResponse().addHeader(k, v));
-		StreamTool.copyStream(is, context.getResponse().getOutputStream());
+		reponse.setStatus(status);
+
+		context.getResponseBuilder().forEachHeader(h -> reponse.addHeader(h.getKey(), h.getValue()));
+		StreamTool.copyStream(is, reponse.getOutputStream());
 	}
 
 	public void put(String key, Object value) {

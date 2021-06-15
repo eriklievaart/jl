@@ -2,6 +2,8 @@ package com.eriklievaart.javalightning.bundle.api.render;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.eriklievaart.javalightning.bundle.api.RequestContext;
 import com.eriklievaart.toolkit.io.api.StreamTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;
@@ -17,9 +19,10 @@ public class StringRenderer implements ServletReponseRenderer {
 
 	@Override
 	public void render(RequestContext context) throws IOException {
-		context.getResponse().setStatus(context.getResponseBuilder().getStatusCode());
-		context.getResponseBuilder().getHeaders().forEach((k, v) -> context.getResponse().addHeader(k, v));
-		StreamTool.writeString(data, context.getResponse().getOutputStream());
+		HttpServletResponse reponse = context.getResponse();
+		reponse.setStatus(context.getResponseBuilder().getStatusCode());
+		context.getResponseBuilder().forEachHeader(h -> reponse.addHeader(h.getKey(), h.getValue()));
+		StreamTool.writeString(data, reponse.getOutputStream());
 	}
 
 	@Override

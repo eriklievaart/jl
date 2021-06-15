@@ -6,11 +6,14 @@ import java.util.Hashtable;
 
 import javax.servlet.Servlet;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 
 import com.eriklievaart.javalightning.bundle.api.page.PageService;
 import com.eriklievaart.javalightning.bundle.api.page.RouteService;
+import com.eriklievaart.javalightning.bundle.api.websocket.WebSocketService;
 import com.eriklievaart.javalightning.bundle.rule.RuleEngine;
 import com.eriklievaart.javalightning.bundle.rule.RuleEngineParser;
 import com.eriklievaart.osgi.toolkit.api.ActivatorWrapper;
@@ -35,16 +38,37 @@ public class Activator extends ActivatorWrapper {
 		MvcBeans beans = new MvcBeans();
 		beans.setContext(getBundleContext());
 
-		String prefix = getContextWrapper().getPropertyString(SERVLET_PREFIX, "");
-		beans.setServletPrefix(prefix);
+		beans.setServletPrefix(getServletPrefix());
 		beans.setHost(getContextWrapper().getPropertyString(HOST, "localhost:8000"));
 		beans.setExceptionRedirect(getContextWrapper().getPropertyString(EXCEPTION_REDIRECT, ""));
 		beans.setHttps(getContextWrapper().getPropertyBoolean(HTTPS, false));
-		ContentServlet servlet = new ContentServlet(beans, createRulesEngine(getContextWrapper()));
 
-		addServiceWithCleanup(Servlet.class, servlet, getOsgiPropertiesServlet(prefix));
 		addServiceWithCleanup(RouteService.class, beans.getRouteService());
 		addWhiteboardWithCleanup(PageService.class, beans.getPageServiceIndex());
+		addWhiteboardWithCleanup(WebSocketService.class, beans.getWebSocketIndex());
+		addWebSocketServlet(context, beans);
+	}
+
+	private void addWebSocketServlet(BundleContext context, MvcBeans beans) throws Exception {
+		ClassLoader original = Thread.currentThread().getContextClassLoader();
+		ClassLoader jettyClassLoader = getJettyBundle(context).adapt(BundleWiring.class).getClassLoader();
+		Thread.currentThread().setContextClassLoader(jettyClassLoader);
+
+		try {
+			ContentServlet servlet = new ContentServlet(beans, createRulesEngine(getContextWrapper()));
+			addServiceWithCleanup(Servlet.class, servlet, getOsgiPropertiesServlet(getServletPrefix()));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		} finally {
+			Thread.currentThread().setContextClassLoader(original);
+		}
+	}
+
+	private String getServletPrefix() {
+		return getContextWrapper().getPropertyString(SERVLET_PREFIX, "");
 	}
 
 	private Dictionary<String, Object> getOsgiPropertiesServlet(String prefix) {
@@ -71,5 +95,14 @@ public class Activator extends ActivatorWrapper {
 			String path = "/bundle/rules-defaults.ini";
 			return RuleEngineParser.parse(IniNodeIO.read(ResourceTool.getInputStream(getClass(), path)));
 		}
+	}
+
+	private Bundle getJettyBundle(BundleContext context) {
+		for (Bundle bundle : context.getBundles()) {
+			if (bundle.getSymbolicName().equals("org.apache.felix.http.jetty")) {
+				return bundle;
+			}
+		}
+		throw new RuntimeException("Jetty not found");
 	}
 }

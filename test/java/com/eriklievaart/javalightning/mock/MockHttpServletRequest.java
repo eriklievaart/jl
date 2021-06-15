@@ -13,15 +13,15 @@ import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 import com.eriklievaart.toolkit.io.api.UrlTool;
+import com.eriklievaart.toolkit.lang.api.collection.CollectionTool;
+import com.eriklievaart.toolkit.lang.api.collection.FromCollection;
+import com.eriklievaart.toolkit.lang.api.collection.MultiMap;
 
 public class MockHttpServletRequest extends MockServletRequest implements HttpServletRequest {
 
 	private String url = "https://www.example.com/path";
 	private MockHttpSession session = new MockHttpSession();
-
-	public void setUrl(String value) {
-		url = value;
-	}
+	private MultiMap<String, String> headers = new MultiMap<>();
 
 	@Override
 	public boolean authenticate(HttpServletResponse arg0) throws IOException, ServletException {
@@ -54,18 +54,18 @@ public class MockHttpServletRequest extends MockServletRequest implements HttpSe
 	}
 
 	@Override
-	public String getHeader(String arg0) {
-		return null;
+	public String getHeader(String name) {
+		return CollectionTool.getSingle(headers.get(name));
 	}
 
 	@Override
 	public Enumeration<String> getHeaderNames() {
-		return null;
+		return FromCollection.toEnumeration(headers.keySet());
 	}
 
 	@Override
-	public Enumeration<String> getHeaders(String arg0) {
-		return null;
+	public Enumeration<String> getHeaders(String name) {
+		return FromCollection.toEnumeration(headers.get(name));
 	}
 
 	@Override
@@ -73,9 +73,13 @@ public class MockHttpServletRequest extends MockServletRequest implements HttpSe
 		return 0;
 	}
 
+	public void setHeader(String name, String value) {
+		headers.setSingleValue(name, value);
+	}
+
 	@Override
 	public String getMethod() {
-		return null;
+		return "GET";
 	}
 
 	@Override
@@ -116,6 +120,14 @@ public class MockHttpServletRequest extends MockServletRequest implements HttpSe
 	@Override
 	public StringBuffer getRequestURL() {
 		return new StringBuffer(url);
+	}
+
+	public void setRequestUrl(String value) {
+		url = value;
+	}
+
+	public void setUrl(String value) {
+		setRequestUrl(value);
 	}
 
 	@Override

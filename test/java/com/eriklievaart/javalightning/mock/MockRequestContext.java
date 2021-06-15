@@ -16,6 +16,14 @@ public class MockRequestContext extends RequestContext {
 		this(new MockHttpServletRequest(), new MockHttpServletResponse());
 	}
 
+	public MockRequestContext(MockHttpServletRequest request) {
+		this(request, new MockHttpServletResponse());
+	}
+
+	public MockRequestContext(MockHttpServletResponse response) {
+		this(new MockHttpServletRequest(), response);
+	}
+
 	public MockRequestContext(MockHttpServletRequest request, MockHttpServletResponse response) {
 		super(null, request, response);
 	}

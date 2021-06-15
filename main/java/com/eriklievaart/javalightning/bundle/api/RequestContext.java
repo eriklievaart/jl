@@ -1,5 +1,9 @@
 package com.eriklievaart.javalightning.bundle.api;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -16,6 +20,7 @@ import com.eriklievaart.javalightning.bundle.control.ParametersSupplier;
 import com.eriklievaart.javalightning.bundle.route.ContentTypes;
 import com.eriklievaart.osgi.toolkit.api.ContextWrapper;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
+import com.eriklievaart.toolkit.lang.api.collection.FromCollection;
 import com.eriklievaart.toolkit.lang.api.collection.OptionalTool;
 
 public class RequestContext {
@@ -52,6 +57,16 @@ public class RequestContext {
 
 	public HttpServletRequest getRequest() {
 		return request;
+	}
+
+	public Map<String, List<String>> getRequestHeaders() {
+		Map<String, List<String>> headers = new HashMap<>();
+		Enumeration<String> names = request.getHeaderNames();
+		while (names.hasMoreElements()) {
+			String name = names.nextElement();
+			headers.put(name, FromCollection.toList(request.getHeaders(name)));
+		}
+		return headers;
 	}
 
 	public HttpSession getSession() {
