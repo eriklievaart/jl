@@ -19,6 +19,8 @@ public class ContentTypes {
 
 		extToMime.put("css", "text/css");
 		extToMime.put("js", "text/javascript");
+		extToMime.put("png", "image/png");
+		extToMime.put("jpg", "image/jpg");
 
 		return extToMime;
 	}
