@@ -19,7 +19,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
-import com.eriklievaart.jl.bundle.api.MultiPartParameter;
+import com.eriklievaart.jl.core.api.MultiPartParameter;
 import com.eriklievaart.jl.email.api.Email;
 import com.eriklievaart.jl.email.api.EmailService;
 import com.eriklievaart.toolkit.lang.api.check.Check;

@@ -3,7 +3,7 @@ package com.eriklievaart.jl.mock;
 import java.io.InputStream;
 import java.util.Map;
 
-import com.eriklievaart.jl.bundle.api.template.TemplateSource;
+import com.eriklievaart.jl.core.api.template.TemplateSource;
 import com.eriklievaart.toolkit.io.api.StreamTool;
 import com.eriklievaart.toolkit.io.api.UrlTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;

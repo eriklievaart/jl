@@ -1,6 +1,6 @@
 package com.eriklievaart.jl.freemarker;
 
-import com.eriklievaart.jl.bundle.api.RequestContext;
+import com.eriklievaart.jl.core.api.RequestContext;
 import com.eriklievaart.jl.freemarker.config.FreemarkerConfigurationFactory;
 import com.eriklievaart.jl.freemarker.config.FreemarkerOsgiConfig;
 import com.eriklievaart.jl.freemarker.model.InjectedGlobals;

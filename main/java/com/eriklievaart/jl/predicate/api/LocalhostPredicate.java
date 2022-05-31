@@ -4,8 +4,8 @@ import java.util.function.BiPredicate;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.eriklievaart.jl.bundle.api.RequestContext;
-import com.eriklievaart.jl.bundle.api.page.Route;
+import com.eriklievaart.jl.core.api.RequestContext;
+import com.eriklievaart.jl.core.api.page.Route;
 import com.eriklievaart.toolkit.io.api.UrlTool;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 

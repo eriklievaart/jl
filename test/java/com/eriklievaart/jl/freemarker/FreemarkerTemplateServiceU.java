@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
 
-import com.eriklievaart.jl.bundle.api.Bean;
-import com.eriklievaart.jl.bundle.api.template.TemplateGlobal;
+import com.eriklievaart.jl.core.api.Bean;
+import com.eriklievaart.jl.core.api.template.TemplateGlobal;
 import com.eriklievaart.jl.mock.MockFreemarkerService;
 import com.eriklievaart.jl.mock.MockTemplateSource;
 import com.eriklievaart.toolkit.lang.api.check.Check;

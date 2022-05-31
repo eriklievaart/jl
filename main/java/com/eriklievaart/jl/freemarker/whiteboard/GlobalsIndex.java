@@ -2,7 +2,7 @@ package com.eriklievaart.jl.freemarker.whiteboard;
 
 import java.util.Map;
 
-import com.eriklievaart.jl.bundle.api.template.TemplateGlobal;
+import com.eriklievaart.jl.core.api.template.TemplateGlobal;
 import com.eriklievaart.toolkit.lang.api.check.CheckCollection;
 import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;

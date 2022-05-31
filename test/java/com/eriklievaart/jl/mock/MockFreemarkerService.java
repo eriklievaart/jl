@@ -3,9 +3,9 @@ package com.eriklievaart.jl.mock;
 import java.util.Hashtable;
 import java.util.Map;
 
-import com.eriklievaart.jl.bundle.api.template.ClasspathTemplateSource;
-import com.eriklievaart.jl.bundle.api.template.TemplateGlobal;
-import com.eriklievaart.jl.bundle.api.template.TemplateSource;
+import com.eriklievaart.jl.core.api.template.ClasspathTemplateSource;
+import com.eriklievaart.jl.core.api.template.TemplateGlobal;
+import com.eriklievaart.jl.core.api.template.TemplateSource;
 import com.eriklievaart.jl.freemarker.FreemarkerBeans;
 import com.eriklievaart.jl.freemarker.FreemarkerTemplateService;
 import com.eriklievaart.toolkit.io.api.StreamTool;

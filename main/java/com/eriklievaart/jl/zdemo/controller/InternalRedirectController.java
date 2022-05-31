@@ -1,8 +1,8 @@
 package com.eriklievaart.jl.zdemo.controller;
 
-import com.eriklievaart.jl.bundle.api.ResponseBuilder;
-import com.eriklievaart.jl.bundle.api.exception.InternalRedirectException;
-import com.eriklievaart.jl.bundle.api.page.PageController;
+import com.eriklievaart.jl.core.api.ResponseBuilder;
+import com.eriklievaart.jl.core.api.exception.InternalRedirectException;
+import com.eriklievaart.jl.core.api.page.PageController;
 
 public class InternalRedirectController implements PageController {
 

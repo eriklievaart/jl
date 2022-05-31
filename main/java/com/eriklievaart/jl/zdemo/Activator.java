@@ -4,9 +4,9 @@ import java.util.Date;
 
 import org.osgi.framework.BundleContext;
 
-import com.eriklievaart.jl.bundle.api.osgi.LightningActivator;
-import com.eriklievaart.jl.bundle.api.page.PageSecurity;
-import com.eriklievaart.jl.bundle.api.template.TemplateGlobal;
+import com.eriklievaart.jl.core.api.osgi.LightningActivator;
+import com.eriklievaart.jl.core.api.page.PageSecurity;
+import com.eriklievaart.jl.core.api.template.TemplateGlobal;
 import com.eriklievaart.jl.zdemo.controller.DownloadController;
 import com.eriklievaart.jl.zdemo.controller.ExternalRedirectController;
 import com.eriklievaart.jl.zdemo.controller.FreemarkerController;

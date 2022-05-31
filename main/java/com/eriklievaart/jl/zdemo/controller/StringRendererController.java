@@ -2,9 +2,9 @@ package com.eriklievaart.jl.zdemo.controller;
 
 import java.util.Date;
 
-import com.eriklievaart.jl.bundle.api.ResponseBuilder;
-import com.eriklievaart.jl.bundle.api.page.PageController;
-import com.eriklievaart.jl.bundle.api.render.StringRenderer;
+import com.eriklievaart.jl.core.api.ResponseBuilder;
+import com.eriklievaart.jl.core.api.page.PageController;
+import com.eriklievaart.jl.core.api.render.StringRenderer;
 
 public class StringRendererController implements PageController {
 

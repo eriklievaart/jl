@@ -1,6 +1,6 @@
 package com.eriklievaart.jl.email.api;
 
-import com.eriklievaart.jl.bundle.api.MultiPartParameter;
+import com.eriklievaart.jl.core.api.MultiPartParameter;
 import com.eriklievaart.toolkit.lang.api.str.Str;
 
 public class Email {

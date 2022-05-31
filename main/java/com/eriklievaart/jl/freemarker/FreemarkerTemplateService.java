@@ -4,8 +4,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Map;
 
-import com.eriklievaart.jl.bundle.api.RequestContext;
-import com.eriklievaart.jl.bundle.api.template.TemplateService;
+import com.eriklievaart.jl.core.api.RequestContext;
+import com.eriklievaart.jl.core.api.template.TemplateService;
 import com.eriklievaart.jl.freemarker.model.FreemarkerParameters;
 import com.eriklievaart.jl.freemarker.model.Lightning;
 import com.eriklievaart.toolkit.io.api.StreamTool;

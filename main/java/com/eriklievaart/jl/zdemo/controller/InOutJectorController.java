@@ -6,12 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.eriklievaart.jl.bundle.api.Bean;
-import com.eriklievaart.jl.bundle.api.Parameters;
-import com.eriklievaart.jl.bundle.api.RequestContext;
-import com.eriklievaart.jl.bundle.api.ResponseBuilder;
-import com.eriklievaart.jl.bundle.api.page.PageController;
-import com.eriklievaart.jl.bundle.api.render.StringRenderer;
+import com.eriklievaart.jl.core.api.Bean;
+import com.eriklievaart.jl.core.api.Parameters;
+import com.eriklievaart.jl.core.api.RequestContext;
+import com.eriklievaart.jl.core.api.ResponseBuilder;
+import com.eriklievaart.jl.core.api.page.PageController;
+import com.eriklievaart.jl.core.api.render.StringRenderer;
 import com.eriklievaart.toolkit.lang.api.str.Str;
 
 public class InOutJectorController implements PageController {

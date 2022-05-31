@@ -3,7 +3,7 @@ package com.eriklievaart.jl.freemarker.model;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import com.eriklievaart.jl.bundle.control.param.SingleParameters;
+import com.eriklievaart.jl.core.control.param.SingleParameters;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.collection.MultiMap;
 

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.eriklievaart.jl.bundle.api.Parameters;
+import com.eriklievaart.jl.core.api.Parameters;
 import com.eriklievaart.toolkit.io.api.UrlTool;
 import com.eriklievaart.toolkit.lang.api.collection.MapTool;
 import com.eriklievaart.toolkit.lang.api.str.Str;

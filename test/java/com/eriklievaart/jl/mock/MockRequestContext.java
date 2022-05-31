@@ -2,7 +2,7 @@ package com.eriklievaart.jl.mock;
 
 import java.util.Map;
 
-import com.eriklievaart.jl.bundle.api.RequestContext;
+import com.eriklievaart.jl.core.api.RequestContext;
 import com.eriklievaart.osgi.mock.MockServiceCollection;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
 import com.eriklievaart.toolkit.lang.api.check.CheckCollection;

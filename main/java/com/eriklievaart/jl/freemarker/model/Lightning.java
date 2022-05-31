@@ -2,9 +2,9 @@ package com.eriklievaart.jl.freemarker.model;
 
 import java.util.Map;
 
-import com.eriklievaart.jl.bundle.api.RequestContext;
-import com.eriklievaart.jl.bundle.api.exception.NotFound404Exception;
-import com.eriklievaart.jl.bundle.api.page.RouteService;
+import com.eriklievaart.jl.core.api.RequestContext;
+import com.eriklievaart.jl.core.api.exception.NotFound404Exception;
+import com.eriklievaart.jl.core.api.page.RouteService;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class Lightning {

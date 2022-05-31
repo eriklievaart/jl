@@ -1,6 +1,6 @@
 package com.eriklievaart.jl.freemarker.model;
 
-import com.eriklievaart.jl.bundle.api.RequestContext;
+import com.eriklievaart.jl.core.api.RequestContext;
 import com.eriklievaart.jl.freemarker.whiteboard.GlobalsIndex;
 
 public class InjectedGlobals {

@@ -2,8 +2,8 @@ package com.eriklievaart.jl.freemarker;
 
 import org.osgi.framework.BundleContext;
 
-import com.eriklievaart.jl.bundle.api.template.TemplateService;
-import com.eriklievaart.jl.bundle.api.template.TemplateSource;
+import com.eriklievaart.jl.core.api.template.TemplateService;
+import com.eriklievaart.jl.core.api.template.TemplateSource;
 import com.eriklievaart.osgi.toolkit.api.ActivatorWrapper;
 
 public class Activator extends ActivatorWrapper {

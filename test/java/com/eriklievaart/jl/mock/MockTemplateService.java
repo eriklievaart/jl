@@ -3,9 +3,9 @@ package com.eriklievaart.jl.mock;
 import java.io.InputStream;
 import java.util.Map;
 
-import com.eriklievaart.jl.bundle.api.RequestContext;
-import com.eriklievaart.jl.bundle.api.osgi.JavalightningId;
-import com.eriklievaart.jl.bundle.api.template.TemplateService;
+import com.eriklievaart.jl.core.api.RequestContext;
+import com.eriklievaart.jl.core.api.osgi.JavalightningId;
+import com.eriklievaart.jl.core.api.template.TemplateService;
 import com.eriklievaart.toolkit.io.api.StreamTool;
 
 public class MockTemplateService implements TemplateService {
