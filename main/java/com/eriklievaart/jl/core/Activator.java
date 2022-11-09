@@ -92,7 +92,7 @@ public class Activator extends ActivatorWrapper {
 
 		} else {
 			log.info("Using default rules, override with osgi property %", RULES);
-			String path = "/bundle/rules-defaults.ini";
+			String path = "/core/rules-defaults.ini";
 			return RuleEngineParser.parse(IniNodeIO.read(ResourceTool.getInputStream(getClass(), path)));
 		}
 	}
