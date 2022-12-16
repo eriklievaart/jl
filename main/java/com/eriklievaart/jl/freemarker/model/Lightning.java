@@ -16,6 +16,13 @@ public class Lightning {
 		this.context = context;
 	}
 
+	/** returns remote path for current URL. */
+	public String getRemotePath() {
+		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
+			return s.getRemoteAddress();
+		});
+	}
+
 	public String getRemotePath(String service, String route) {
 		log.trace("getting remote path $.$", service, route);
 		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
