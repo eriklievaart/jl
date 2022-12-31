@@ -39,7 +39,8 @@ public class TemplateSourceIndex implements SimpleServiceListener<TemplateSource
 
 	public TemplateSource lookup(String id) {
 		CheckId.isValid(id);
-		Check.isTrue(index.containsKey(id), "Missing TemplateSource %!", id);
+		String msg = "Missing TemplateSource %! Did you call addTemplateSource() in the Activator?";
+		Check.isTrue(index.containsKey(id), msg, id);
 		return index.get(id);
 	}
 }
