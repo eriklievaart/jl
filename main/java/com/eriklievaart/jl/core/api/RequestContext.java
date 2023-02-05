@@ -22,6 +22,9 @@ import com.eriklievaart.osgi.toolkit.api.ContextWrapper;
 import com.eriklievaart.osgi.toolkit.api.ServiceCollection;
 import com.eriklievaart.toolkit.lang.api.collection.FromCollection;
 import com.eriklievaart.toolkit.lang.api.collection.OptionalTool;
+import com.eriklievaart.toolkit.lang.api.str.StringBuilderWrapper;
+import com.eriklievaart.toolkit.reflect.api.PropertyTool;
+import com.eriklievaart.toolkit.reflect.api.method.PropertyWrapper;
 
 public class RequestContext {
 	public static final String EXCEPTION_ATTRIBUTE = "com.eriklievaart.jl.core.api.exception";
@@ -37,6 +40,31 @@ public class RequestContext {
 		this.request = req;
 		this.response = res;
 		reset();
+	}
+
+	public String requestToString() {
+		StringBuilderWrapper builder = new StringBuilderWrapper();
+
+		builder.append(request.getMethod()).append(" ").appendLine(request.getRequestURI());
+		appendProperties(builder);
+		builder.appendLine("\theaders:");
+
+		Enumeration<String> headers = request.getHeaderNames();
+		while (headers.hasMoreElements()) {
+			String header = headers.nextElement();
+			builder.subLine("\t\t$: $", header, request.getHeader(header));
+		}
+
+		return builder.toString();
+	}
+
+	private void appendProperties(StringBuilderWrapper builder) {
+		Map<String, PropertyWrapper> map = PropertyTool.getPropertyMap(HttpServletRequest.class);
+		map.forEach((k, v) -> {
+			if (v.getType() == String.class) {
+				builder.append("\t\t").append(k).append(": ").appendLine(v.getAccessor(request).invoke());
+			}
+		});
 	}
 
 	public void setParameterSupplier(ParametersSupplier supplier) {
