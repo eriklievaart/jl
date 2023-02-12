@@ -18,8 +18,8 @@ public class WebSocketIndex implements SimpleServiceListener<WebSocketService> {
 	@Override
 	public void register(WebSocketService service) {
 		String path = service.getPath();
-		Check.isTrue(path.startsWith("/"), "$#getPath() does not start with slash: %", service.getClass(), path);
 		log.info("registering service $ for path %", service.getClass().getSimpleName(), path);
+		Check.isTrue(path.startsWith("/"), "$#getPath() does not start with slash: %", service.getClass(), path);
 
 		CheckCollection.notPresent(index, path);
 		index.put(path, service);
