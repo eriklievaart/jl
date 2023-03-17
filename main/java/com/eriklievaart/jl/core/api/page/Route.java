@@ -12,7 +12,7 @@ public class Route {
 	private final Supplier<PageController> supplier;
 
 	public Route(String id, RouteAddress address, Supplier<PageController> supplier) {
-		Check.notNull(id, address, supplier);
+		Check.noneNull(id, address, supplier);
 		Check.matches(id, "[a-z0-9.]*+");
 		this.id = id;
 		this.address = address;

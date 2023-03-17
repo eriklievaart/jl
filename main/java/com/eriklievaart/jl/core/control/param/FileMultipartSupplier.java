@@ -27,7 +27,7 @@ public class FileMultipartSupplier implements MultiPartParameter, Closeable {
 	private File file;
 
 	public FileMultipartSupplier(String name, byte[] bytes, InputStream is) throws IOException {
-		Check.notNull(name, bytes, is);
+		Check.noneNull(name, bytes, is);
 
 		this.name = name;
 		this.file = createTempFile(bytes, is);

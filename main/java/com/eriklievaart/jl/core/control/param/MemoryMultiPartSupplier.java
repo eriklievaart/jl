@@ -14,7 +14,7 @@ public class MemoryMultiPartSupplier implements MultiPartParameter {
 	private String name;
 
 	public MemoryMultiPartSupplier(String name, byte[] bytes) {
-		Check.notNull(name, bytes);
+		Check.noneNull(name, bytes);
 
 		this.name = name;
 		this.bytes = bytes;

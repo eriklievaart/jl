@@ -28,7 +28,7 @@ public class RouteIndex {
 	private List<Route> wildcardMappings = NewCollection.concurrentList();
 
 	public RouteIndex(PageService service) {
-		Check.notNull(service.getPrefix(), service.getSecurity());
+		Check.noneNull(service.getPrefix(), service.getSecurity());
 
 		this.serviceId = service.getPrefix();
 		this.security = service.getSecurity();

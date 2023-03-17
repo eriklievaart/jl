@@ -10,7 +10,7 @@ public class RouteAddress {
 	private final EnumSet<RouteType> types;
 
 	public RouteAddress(String path, EnumSet<RouteType> types) {
-		Check.notNull(path, types);
+		Check.noneNull(path, types);
 		this.path = UrlTool.removeLeadingSlashes(UrlTool.removeTrailingSlash(path));
 		this.types = types;
 	}
