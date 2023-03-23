@@ -2,6 +2,8 @@ package com.eriklievaart.jl.freemarker.model;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.eriklievaart.jl.core.api.RequestContext;
 import com.eriklievaart.jl.core.api.exception.NotFound404Exception;
 import com.eriklievaart.jl.core.api.page.RouteService;
@@ -16,11 +18,17 @@ public class Lightning {
 		this.context = context;
 	}
 
-	/** returns remote path for current URL. */
-	public String getRemotePath() {
+	/** returns remote URL to host. */
+	public String getHost() {
 		return context.getServiceCollection(RouteService.class).oneReturns(s -> {
 			return s.getRemoteAddress();
 		});
+	}
+
+	/** returns path for current URL. */
+	public String getCurrentPath() {
+		HttpServletRequest request = context.getRequest();
+		return request.getRequestURI();
 	}
 
 	public String getRemotePath(String service, String route) {
