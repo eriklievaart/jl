@@ -16,6 +16,11 @@ public abstract class LightningActivator extends ActivatorWrapper {
 	private String name;
 	private AtomicBoolean hasPageService = new AtomicBoolean(false);
 
+	public LightningActivator() {
+		this.name = getClass().getPackage().getName().replaceFirst(".*[.]", "");
+		JavalightningId.validateSyntax(name);
+	}
+
 	public LightningActivator(String name) {
 		JavalightningId.validateSyntax(name);
 		this.name = name;
