@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 import com.eriklievaart.jl.core.api.Parameters;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
+import com.eriklievaart.toolkit.convert.api.construct.BooleanConstructor;
 import com.eriklievaart.toolkit.convert.api.construct.IntegerConstructor;
 import com.eriklievaart.toolkit.convert.api.construct.LongConstructor;
 import com.eriklievaart.toolkit.lang.api.collection.ListTool;
@@ -56,6 +57,16 @@ public abstract class AbstractParameters<V> implements Parameters {
 		if (contains(key)) {
 			consumer.accept(getString(key));
 		}
+	}
+
+	@Override
+	public boolean getBoolean(String key) throws ConversionException {
+		return new BooleanConstructor().createConverter().convertToObject(getString(key));
+	}
+
+	@Override
+	public boolean getBoolean(String key, boolean fallback) throws ConversionException {
+		return contains(key) ? getBoolean(key) : fallback;
 	}
 
 	@Override

@@ -23,6 +23,10 @@ public interface Parameters {
 
 	public void getString(String key, Consumer<String> ifPresent);
 
+	public boolean getBoolean(String key) throws ConversionException;
+
+	public boolean getBoolean(String key, boolean fallback) throws ConversionException;
+
 	public int getInteger(String key) throws ConversionException;
 
 	public int getInteger(String key, int fallback) throws ConversionException;

@@ -18,6 +18,7 @@ public class ContentTypes {
 		Map<String, String> extToMime = new HashMap<>();
 
 		extToMime.put("css", "text/css");
+		extToMime.put("csv", "text/csv");
 		extToMime.put("js", "text/javascript");
 		extToMime.put("png", "image/png");
 		extToMime.put("jpg", "image/jpg");
