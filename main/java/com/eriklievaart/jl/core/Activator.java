@@ -1,8 +1,8 @@
 package com.eriklievaart.jl.core;
 
 import java.io.File;
-import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.servlet.Servlet;
 
@@ -71,8 +71,8 @@ public class Activator extends ActivatorWrapper {
 		return getContextWrapper().getPropertyString(SERVLET_PREFIX, "");
 	}
 
-	private Dictionary<String, Object> getOsgiPropertiesServlet(String prefix) {
-		Dictionary<String, Object> props = new Hashtable<>();
+	private Map<String, Object> getOsgiPropertiesServlet(String prefix) {
+		Map<String, Object> props = new Hashtable<>();
 		props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, UrlTool.append(prefix, "*"));
 		props.put("osgi.http.whiteboard.servlet.multipart.enabled", true);
 		return props;

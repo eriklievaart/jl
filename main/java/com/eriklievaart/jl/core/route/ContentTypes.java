@@ -20,6 +20,7 @@ public class ContentTypes {
 		extToMime.put("css", "text/css");
 		extToMime.put("csv", "text/csv");
 		extToMime.put("js", "text/javascript");
+		extToMime.put("ico", "image/png");
 		extToMime.put("png", "image/png");
 		extToMime.put("jpg", "image/jpg");
 

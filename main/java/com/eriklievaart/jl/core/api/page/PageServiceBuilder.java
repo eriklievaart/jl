@@ -10,7 +10,7 @@ import com.eriklievaart.toolkit.lang.api.collection.NewCollection;
 public class PageServiceBuilder {
 
 	private final List<Route> routes = NewCollection.list();
-	private PageSecurity security;
+	private PageSecurity security = PageSecurity.allowAll;
 
 	public PageServiceBuilder() {
 	}
@@ -59,8 +59,6 @@ public class PageServiceBuilder {
 	}
 
 	public PageService createPageService(String name) {
-		Check.notNull(security, "setSecurity not called");
-
 		return new PageService() {
 			@Override
 			public String getPrefix() {
@@ -80,6 +78,7 @@ public class PageServiceBuilder {
 	}
 
 	public PageServiceBuilder setSecurity(PageSecurity secure) {
+		Check.notNull(secure);
 		this.security = secure;
 		return this;
 	}
