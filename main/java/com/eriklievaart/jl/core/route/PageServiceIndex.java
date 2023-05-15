@@ -54,10 +54,8 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 			log.info("registering PageService[$]", service.getPrefix());
 			String prefix = service.getPrefix();
 			JavalightningId.validateSyntax(prefix);
+			services.putIfAbsent(prefix, new RouteIndex(service));
 
-			if (!services.containsKey(prefix)) {
-				services.putIfAbsent(prefix, new RouteIndex(service));
-			}
 		} catch (Exception e) {
 			log.warn("Unable to register service %", e, service.getPrefix());
 		}
@@ -74,7 +72,7 @@ public class PageServiceIndex implements SimpleServiceListener<PageService> {
 		String service = UrlTool.removeTrailingSlash(UrlTool.getHead(skipPrefix));
 		Check.notNull(service, "requested URL does not start with a service %", path);
 		if (!services.containsKey(service)) {
-			log.debug("unknown service $:$ {$}", method, path, services.keySet());
+			log.debug("unknown service ${$} for $:$", service, services.keySet(), method, path);
 			return Optional.empty();
 		}
 		return services.get(service).resolve(method, UrlTool.getTail(skipPrefix));
