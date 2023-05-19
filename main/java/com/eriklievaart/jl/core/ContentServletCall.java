@@ -150,7 +150,7 @@ public class ContentServletCall {
 		route.validate(context);
 
 		PageController controller = route.getController(context);
-		log.debug("$ -> controller $", route.getRoute(), controller);
+		log.debug("$ -> controller $", route.getRoute(), controller.getClass());
 		invoke(context, controller);
 	}
 

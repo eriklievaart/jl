@@ -93,8 +93,6 @@ public class ContentServlet extends WebSocketServlet {
 
 	private void trace(long start, String url) {
 		long spent = System.currentTimeMillis() - start;
-		if (spent > 100) {
-			log.debug("spent $ms on url %", spent, url);
-		}
+		beans.getHttpLogger().log(url, spent);
 	}
 }

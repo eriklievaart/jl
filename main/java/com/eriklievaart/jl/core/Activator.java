@@ -3,6 +3,7 @@ package com.eriklievaart.jl.core;
 import java.io.File;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.servlet.Servlet;
 
@@ -18,13 +19,21 @@ import com.eriklievaart.jl.core.rule.RuleEngine;
 import com.eriklievaart.jl.core.rule.RuleEngineParser;
 import com.eriklievaart.osgi.toolkit.api.ActivatorWrapper;
 import com.eriklievaart.osgi.toolkit.api.ContextWrapper;
+import com.eriklievaart.toolkit.io.api.CheckFile;
 import com.eriklievaart.toolkit.io.api.ResourceTool;
 import com.eriklievaart.toolkit.io.api.UrlTool;
 import com.eriklievaart.toolkit.io.api.ini.IniNodeIO;
 import com.eriklievaart.toolkit.lang.api.str.Str;
+import com.eriklievaart.toolkit.logging.api.LogConfig;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
+import com.eriklievaart.toolkit.logging.api.appender.SimpleFileAppender;
+import com.eriklievaart.toolkit.logging.api.level.LogLevelTool;
 
 public class Activator extends ActivatorWrapper {
+	private static final String HTTP_FILE = "com.eriklievaart.jl.core.http.file";
+	private static final String HTTP_LEVEL = "com.eriklievaart.jl.core.http.level";
+	private static final String HTTP_LOGGER = "com.eriklievaart.jl.core.http.logger";
+	private static final String HTTP_MILLIS = "com.eriklievaart.jl.core.http.millis";
 	private static final String HOST = "com.eriklievaart.jl.core.host";
 	private static final String HTTPS = "com.eriklievaart.jl.core.https";
 	private static final String SERVLET_PREFIX = "com.eriklievaart.jl.core.servlet_prefix";
@@ -38,6 +47,7 @@ public class Activator extends ActivatorWrapper {
 		MvcBeans beans = new MvcBeans();
 		beans.setContext(getBundleContext());
 
+		beans.setHttpLogger(getHttpLogger());
 		beans.setServletPrefix(getServletPrefix());
 		beans.setHost(getContextWrapper().getPropertyString(HOST, "localhost:8000"));
 		beans.setExceptionRedirect(getContextWrapper().getPropertyString(EXCEPTION_REDIRECT, ""));
@@ -47,6 +57,27 @@ public class Activator extends ActivatorWrapper {
 		addWhiteboardWithCleanup(PageService.class, beans.getPageServiceIndex());
 		addWhiteboardWithCleanup(WebSocketService.class, beans.getWebSocketIndex());
 		addWebSocketServlet(context, beans);
+	}
+
+	private HttpLogger getHttpLogger() {
+		ContextWrapper wrapper = getContextWrapper();
+
+		Level level = LogLevelTool.toLevel(wrapper.getPropertyString(HTTP_LEVEL, "debug"));
+		int millis = wrapper.getPropertyInt(HTTP_MILLIS, 100);
+		String logger = wrapper.getPropertyString(HTTP_LOGGER, HttpLogger.class.getName()).trim();
+		wrapper.getPropertyStringOptional(HTTP_FILE, path -> {
+			useFileAppender(logger, new File(path));
+		});
+		return new HttpLogger(logger, level, millis);
+	}
+
+	private void useFileAppender(String logger, File file) {
+		file.getParentFile().mkdirs();
+		CheckFile.isDirectory(file.getParentFile());
+
+		SimpleFileAppender appender = new SimpleFileAppender(file);
+		appender.setFormatter(record -> record.getMessage());
+		LogConfig.setAppenders(logger, appender);
 	}
 
 	private void addWebSocketServlet(BundleContext context, MvcBeans beans) throws Exception {

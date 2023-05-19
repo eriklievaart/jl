@@ -11,6 +11,7 @@ public class MvcBeans {
 	private PageServiceIndex routes = new PageServiceIndex();
 	private WebSocketIndex sockets = new WebSocketIndex();
 	private BundleContext context;
+	private HttpLogger httpLogger;
 
 	public BundleContext getContext() {
 		return context;
@@ -46,5 +47,13 @@ public class MvcBeans {
 
 	public void setExceptionRedirect(String redirect) {
 		routes.setExceptionRedirect(redirect);
+	}
+
+	public HttpLogger getHttpLogger() {
+		return httpLogger;
+	}
+
+	public void setHttpLogger(HttpLogger bean) {
+		this.httpLogger = bean;
 	}
 }
