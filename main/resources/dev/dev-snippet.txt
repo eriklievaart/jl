@@ -1,0 +1,44 @@
+<script>
+
+function createSocket() {
+    if(typeof ws !== 'undefined' && ws.readyState === WebSocket.OPEN) {
+        return;
+    }
+    console.log("connecting dev socket: " + new Date());
+    ws = new WebSocket('ws://localhost:8000/dev/refresh');
+
+    ws.onopen = function() {
+        console.log('dev socket connected!');
+    };
+    ws.onmessage = function(e){
+        if(e.data == 'reload') {
+            location.reload();
+
+        } else if(e.data.startsWith('init=')) {
+			if (init == 0) {
+				init = e.data.substring(5);
+			} else {
+				location.reload();
+			}
+
+        } else {
+            console.log('dev socket received: ' + e.data);
+        }
+    };
+    ws.onclose = function() {
+		console.log('dev socket disconnected!');
+    };
+}
+
+function ping() {
+    if(typeof ws !== 'undefined' && ws.readyState === WebSocket.OPEN) {
+		ws.send('ping');
+	}
+}
+
+init = 0;
+createSocket();
+setInterval(createSocket, 5000);
+setInterval(ping, 60 * 1000); // ping once every minute
+
+</script>
