@@ -40,7 +40,7 @@ public class FreemarkerTemplateService implements TemplateService {
 			return StreamTool.toInputStream(writer.getBuffer().toString());
 
 		} catch (Exception e) {
-			throw new FormattedException("Unable to render template %; $", e, view, e.getMessage());
+			throw new FormattedException("Unable to render template %\n$", e, view, e.getMessage());
 		}
 	}
 }
