@@ -49,7 +49,7 @@ public class RouteIndex {
 
 		} else {
 			for (RouteType method : route.getTypes()) {
-				log.trace("installing route $:/$/$", method, serviceId, path);
+				log.debug("installing route $:/$/$", method, serviceId, path);
 				String key = createKey(method, path);
 				pathToRoute.put(key, route);
 			}

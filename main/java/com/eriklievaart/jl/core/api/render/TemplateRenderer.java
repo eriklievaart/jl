@@ -40,7 +40,7 @@ public class TemplateRenderer implements ServletReponseRenderer {
 		InputStream is = service.oneReturns(s -> s.render(resource, model, context));
 
 		int status = context.getResponseBuilder().getStatusCode();
-		log.trace("% status %", resource, status);
+		log.trace("$ status $", resource, status);
 		reponse.setStatus(status);
 
 		context.getResponseBuilder().forEachHeader(h -> reponse.addHeader(h.getKey(), h.getValue()));

@@ -47,7 +47,7 @@ public class OsgiTemplateLoader implements TemplateLoader {
 		File file = getTemplateFile(templateSource);
 		if (file != null) {
 			if (file.exists()) {
-				log.debug("loading template from filesystem: $", file.getPath().replaceFirst("/home/[^/]++", "~"));
+				log.debug("loading file $", file.getPath().replaceFirst("/home/[^/]++", "~"));
 				return new FileReader(file);
 			}
 			log.trace("file does not exist, switching to classpath for $", file.getPath());
