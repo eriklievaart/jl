@@ -13,10 +13,12 @@ import java.util.function.Consumer;
 import com.eriklievaart.jl.core.api.Parameters;
 import com.eriklievaart.toolkit.convert.api.ConversionException;
 import com.eriklievaart.toolkit.convert.api.construct.BooleanConstructor;
+import com.eriklievaart.toolkit.convert.api.construct.DoubleConstructor;
 import com.eriklievaart.toolkit.convert.api.construct.IntegerConstructor;
 import com.eriklievaart.toolkit.convert.api.construct.LongConstructor;
 import com.eriklievaart.toolkit.lang.api.collection.ListTool;
 import com.eriklievaart.toolkit.lang.api.collection.MapTool;
+import com.eriklievaart.toolkit.lang.api.str.Str;
 
 public abstract class AbstractParameters<V> implements Parameters {
 
@@ -31,6 +33,16 @@ public abstract class AbstractParameters<V> implements Parameters {
 		List<String> keys = ListTool.of(key);
 		ListTool.addAll(keys, tail);
 		return containsAll(keys);
+	}
+
+	@Override
+	public boolean isBlank(String key) {
+		return !contains(key) || getString(key).isBlank();
+	}
+
+	@Override
+	public boolean notBlank(String key) {
+		return !isBlank(key);
 	}
 
 	private boolean containsAll(List<String> keys) {
@@ -76,7 +88,7 @@ public abstract class AbstractParameters<V> implements Parameters {
 
 	@Override
 	public int getInteger(String key, int fallback) throws ConversionException {
-		return contains(key) ? getInteger(key) : fallback;
+		return contains(key) && Str.notBlank(getString(key)) ? getInteger(key) : fallback;
 	}
 
 	@Override
@@ -108,6 +120,11 @@ public abstract class AbstractParameters<V> implements Parameters {
 		List<String> keys = new ArrayList<>(delegate.keySet());
 		Collections.sort(keys);
 		return keys;
+	}
+
+	@Override
+	public double getDouble(String key) throws ConversionException {
+		return new DoubleConstructor().createConverter().convertToObject(getString(key));
 	}
 
 	@Override

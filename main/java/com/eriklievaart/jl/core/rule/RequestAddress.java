@@ -50,6 +50,10 @@ public class RequestAddress {
 		return secure;
 	}
 
+	public boolean isFavicon() {
+		return path.endsWith("/favicon.ico") && method == RouteType.GET;
+	}
+
 	@Override
 	public String toString() {
 		return Str.sub("$:$", method, path);

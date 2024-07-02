@@ -1,7 +1,9 @@
 package com.eriklievaart.jl.core;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +13,7 @@ import com.eriklievaart.jl.core.api.exception.InternalRedirectException;
 import com.eriklievaart.jl.core.api.exception.NotFound404Exception;
 import com.eriklievaart.jl.core.api.exception.RedirectException;
 import com.eriklievaart.jl.core.api.page.PageController;
+import com.eriklievaart.jl.core.api.render.InputStreamRenderer;
 import com.eriklievaart.jl.core.api.render.ServletReponseRenderer;
 import com.eriklievaart.jl.core.control.ParametersSupplier;
 import com.eriklievaart.jl.core.route.PageServiceIndex;
@@ -26,6 +29,7 @@ import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class ContentServletCall {
 	private LogTemplate log = new LogTemplate(getClass());
+	private Supplier<InputStream> favicon = () -> getClass().getResourceAsStream("/core/favicon.ico");
 
 	private MvcBeans beans;
 	private HttpServletRequest req;
@@ -144,7 +148,13 @@ public class ContentServletCall {
 
 		Optional<SecureRoute> optional = index.resolve(address.getMethod(), address.getPath());
 		if (!optional.isPresent()) {
-			throw new NotFound404Exception();
+			if (address.isFavicon()) {
+				log.debug("favicon not configured, using framework fallback");
+				invoke(context, b -> b.setRenderer(new InputStreamRenderer(favicon.get())));
+				return;
+			} else {
+				throw new NotFound404Exception();
+			}
 		}
 		SecureRoute route = optional.get();
 		route.validate(context);

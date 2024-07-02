@@ -13,6 +13,10 @@ public interface Parameters {
 
 	public boolean contains(String key, String... keys);
 
+	public boolean isBlank(String key);
+
+	public boolean notBlank(String key);
+
 	public abstract List<String> getStrings(String key);
 
 	public abstract Optional<String> getOptional(String key);
@@ -38,6 +42,8 @@ public interface Parameters {
 	public long getLong(String key, long fallback) throws ConversionException;
 
 	public void getLong(String key, Consumer<Long> ifPresent) throws ConversionException;
+
+	public double getDouble(String key) throws ConversionException;
 
 	public abstract MultiPartParameter getMultiPart(String key) throws IOException;
 
