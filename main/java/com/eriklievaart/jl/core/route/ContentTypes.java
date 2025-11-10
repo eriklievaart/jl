@@ -23,6 +23,7 @@ public class ContentTypes {
 		extToMime.put("ico", "image/png");
 		extToMime.put("png", "image/png");
 		extToMime.put("jpg", "image/jpg");
+		extToMime.put("svg", "image/svg+xml");
 
 		return extToMime;
 	}

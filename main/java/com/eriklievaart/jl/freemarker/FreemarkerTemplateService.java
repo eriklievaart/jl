@@ -7,6 +7,7 @@ import java.util.Map;
 import com.eriklievaart.jl.core.api.RequestContext;
 import com.eriklievaart.jl.core.api.template.TemplateService;
 import com.eriklievaart.jl.freemarker.model.FreemarkerParameters;
+import com.eriklievaart.jl.freemarker.model.FreemarkerSessionAttributes;
 import com.eriklievaart.jl.freemarker.model.Lightning;
 import com.eriklievaart.toolkit.io.api.StreamTool;
 import com.eriklievaart.toolkit.lang.api.FormattedException;
@@ -32,6 +33,7 @@ public class FreemarkerTemplateService implements TemplateService {
 			data.putIfAbsent("lightning", new Lightning(context));
 			data.putIfAbsent("globals", beans.getInjectedGlobals(context));
 			data.putIfAbsent("parameter", new FreemarkerParameters(context.getParameterSupplier()));
+			data.putIfAbsent("session", new FreemarkerSessionAttributes(context.getSession()));
 		}
 		try {
 			StringWriter writer = new StringWriter();
