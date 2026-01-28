@@ -7,11 +7,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import com.eriklievaart.toolkit.lang.api.check.Check;
+import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public class MockHttpServletResponse extends MockServletResponse implements HttpServletResponse {
+	private LogTemplate log = new LogTemplate(getClass());
 
 	private String redirected;
 	private int status = 0;
+	private boolean errorSent;
 
 	@Override
 	public void sendRedirect(String url) throws IOException {
@@ -85,12 +88,16 @@ public class MockHttpServletResponse extends MockServletResponse implements Http
 
 	@Override
 	public void sendError(int code) throws IOException {
+		log.info("sending error: $", code);
 		this.status = code;
+		this.errorSent = true;
 	}
 
 	@Override
 	public void sendError(int code, String message) throws IOException {
+		log.info("sending error: $ -> $", code, message);
 		this.status = code;
+		this.errorSent = true;
 	}
 
 	@Override
@@ -107,11 +114,18 @@ public class MockHttpServletResponse extends MockServletResponse implements Http
 
 	@Override
 	public void setStatus(int value) {
+		log.info("setting status: $", value);
+		if (errorSent) {
+			Thread.yield();
+		}
+		Check.isFalse(errorSent);
 		status = value;
 	}
 
 	@Override
 	public void setStatus(int value, String message) {
+		log.info("setting status: $ - $", value, message);
+		Check.isFalse(errorSent);
 		status = value;
 	}
 

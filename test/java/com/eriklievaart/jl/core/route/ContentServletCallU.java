@@ -165,4 +165,44 @@ public class ContentServletCallU {
 		invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"));
 		response.checkSendError(404);
 	}
+
+	@Test
+	public void invokeMissingPageControllerRenderErrorPage() throws Exception {
+		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
+
+		DummyPageController errorPageController = new DummyPageController();
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("oops").mapGet("/error-page/", () -> errorPageController);
+		beans.getPageServiceIndex().register(routes.createPageService("oops"));
+
+		beans.getPageServiceIndex().setExceptionRedirect("/mvc/oops/error-page/");
+
+		HttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		ContentServletCall invocation = new ContentServletCall(beans, request, response);
+
+		invocation.render(new RequestAddress(RouteType.GET, "/mvc/foo/bar"));
+		Check.isTrue(errorPageController.isInvoked());
+	}
+
+	@Test
+	public void invokeMissingPageControllerForPostRedirectsToErrorPageGet() throws Exception {
+		MvcBeans beans = new MvcBeans();
+		beans.setServletPrefix("mvc");
+
+		DummyPageController errorPageController = new DummyPageController();
+		PageServiceBuilder routes = new PageServiceBuilder();
+		routes.newRoute("oops").mapGet("/error-page/", () -> errorPageController);
+		beans.getPageServiceIndex().register(routes.createPageService("oops"));
+
+		beans.getPageServiceIndex().setExceptionRedirect("/mvc/oops/error-page/");
+
+		HttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		ContentServletCall invocation = new ContentServletCall(beans, request, response);
+
+		invocation.render(new RequestAddress(RouteType.POST, "/mvc/foo/bar"));
+		Check.isTrue(errorPageController.isInvoked());
+	}
 }

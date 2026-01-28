@@ -9,10 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.eriklievaart.jl.core.api.RequestContext;
-import com.eriklievaart.jl.core.api.exception.InternalRedirectException;
+import com.eriklievaart.jl.core.api.UseErrorPage;
 import com.eriklievaart.jl.core.api.exception.NotFound404Exception;
 import com.eriklievaart.jl.core.api.exception.RedirectException;
 import com.eriklievaart.jl.core.api.page.PageController;
+import com.eriklievaart.jl.core.api.page.RouteType;
 import com.eriklievaart.jl.core.api.render.InputStreamRenderer;
 import com.eriklievaart.jl.core.api.render.ServletReponseRenderer;
 import com.eriklievaart.jl.core.control.ParametersSupplier;
@@ -26,6 +27,7 @@ import com.eriklievaart.toolkit.lang.api.ThrowableTool;
 import com.eriklievaart.toolkit.lang.api.check.Check;
 import com.eriklievaart.toolkit.lang.api.str.Str;
 import com.eriklievaart.toolkit.logging.api.LogTemplate;
+import com.eriklievaart.toolkit.reflect.api.annotations.AnnotationTool;
 
 public class ContentServletCall {
 	private LogTemplate log = new LogTemplate(getClass());
@@ -66,8 +68,10 @@ public class ContentServletCall {
 	}
 
 	public void render(RequestAddress address) throws IOException {
-		RequestContext context = new RequestContext(beans.getContext(), req, res);
+		render(address, new RequestContext(beans.getContext(), req, res));
+	}
 
+	private void render(RequestAddress address, RequestContext context) throws IOException {
 		try {
 			invoke(address, context);
 			ServletReponseRenderer renderer = context.getRenderer();
@@ -78,6 +82,10 @@ public class ContentServletCall {
 			}
 
 		} catch (Exception e) {
+			Boolean manualOverride = context.isUsingErrorPage();
+			if (manualOverride == null) {
+				context.setUseErrorPage(true);
+			}
 			if (!ignoreException(e)) {
 				handleException(address, context, e);
 			}
@@ -96,23 +104,28 @@ public class ContentServletCall {
 		Throwable root = ThrowableTool.getRootCause(e);
 		String exceptionPath = beans.getPageServiceIndex().getExceptionRedirect();
 
+		if (root instanceof RedirectException) {
+			redirect(address, (RedirectException) root);
+			return;
+		}
+		boolean usingErrorPage = context.isUsingErrorPage() && Str.notBlank(exceptionPath);
+		if (usingErrorPage) {
+			customErrorPage(context, e, exceptionPath);
+			return;
+		}
 		if (root instanceof NotFound404Exception) {
 			log.debug("$:$ $ %", address.getMethod(), req.getRequestURL(), root.getMessage(), req.getRemoteHost());
 			sendError(404, "not found");
 			return;
-
-		} else if (root instanceof RedirectException) {
-			redirect(address, (RedirectException) root);
-			return;
 		}
 		log.error("Uncaught $: $", e, root.getClass().getSimpleName(), root.getMessage());
-		if (Str.notBlank(exceptionPath)) {
-			storeExceptionInRequest(context, e);
-			redirect(address, new InternalRedirectException(exceptionPath));
+		throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
+	}
 
-		} else {
-			throw new FormattedException("% invocation failed; $", e, req.getRequestURI(), e.getMessage());
-		}
+	private void customErrorPage(RequestContext context, Exception e, String exceptionPath) throws IOException {
+		context.setUseErrorPage(false); // prevents errors in the error page causing a redirect loop
+		storeExceptionInRequest(context, e);
+		render(new RequestAddress(RouteType.GET, exceptionPath), context);
 	}
 
 	private void sendError(int status, String message) {
@@ -153,13 +166,14 @@ public class ContentServletCall {
 				invoke(context, b -> b.setRenderer(new InputStreamRenderer(favicon.get())));
 				return;
 			} else {
-				throw new NotFound404Exception();
+				throw new NotFound404Exception("cannot resolve $:$", address.getMethod(), address.getPath());
 			}
 		}
 		SecureRoute route = optional.get();
 		route.validate(context);
 
 		PageController controller = route.getController(context);
+		useErrorPage(controller, context);
 		log.debug("$ -> controller $", route.getRoute(), controller.getClass());
 		invoke(context, controller);
 	}
@@ -173,6 +187,14 @@ public class ContentServletCall {
 
 		} finally {
 			parameters.close();
+		}
+	}
+
+	private void useErrorPage(PageController controller, RequestContext context) {
+		Boolean overridden = context.isUsingErrorPage();
+		UseErrorPage annotation = AnnotationTool.getLiteralAnnotation(controller.getClass(), UseErrorPage.class);
+		if (overridden == null && annotation != null) {
+			context.setUseErrorPage(annotation.value());
 		}
 	}
 }

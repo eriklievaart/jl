@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.eriklievaart.toolkit.convert.api.ConversionException;
+import com.eriklievaart.toolkit.logging.api.LogTemplate;
 
 public interface Parameters {
 
@@ -52,4 +53,8 @@ public interface Parameters {
 	public Map<String, String> getMap();
 
 	public Map<String, String> getMap(String... keys);
+
+	public default void dump() {
+		new LogTemplate(Parameters.class).trace(getMap());
+	}
 }

@@ -38,7 +38,10 @@ public class InputStreamRenderer implements ServletReponseRenderer {
 	@Override
 	public void render(RequestContext context) throws IOException {
 		HttpServletResponse reponse = context.getResponse();
-		reponse.setStatus(context.getResponseBuilder().getStatusCode());
+		int status = context.getResponseBuilder().getStatusCode();
+		if (status != 200) { // don't overwrite errors
+			reponse.setStatus(status);
+		}
 		context.getResponseBuilder().forEachHeader(h -> reponse.addHeader(h.getKey(), h.getValue()));
 		StreamTool.copyStream(is, reponse.getOutputStream());
 	}

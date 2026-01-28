@@ -41,7 +41,9 @@ public class TemplateRenderer implements ServletReponseRenderer {
 
 		int status = context.getResponseBuilder().getStatusCode();
 		log.trace("$ status $", resource, status);
-		reponse.setStatus(status);
+		if (status != 200) { // don't overwrite errors
+			reponse.setStatus(status);
+		}
 
 		context.getResponseBuilder().forEachHeader(h -> reponse.addHeader(h.getKey(), h.getValue()));
 		StreamTool.copyStream(is, reponse.getOutputStream());

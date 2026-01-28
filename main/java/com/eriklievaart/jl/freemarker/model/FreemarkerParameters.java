@@ -48,6 +48,10 @@ public class FreemarkerParameters {
 		return Objects.equals(value, expected);
 	}
 
+	public boolean exists(String key) {
+		return supplier.get().contains(key);
+	}
+
 	public String forward(String... keys) {
 		return UrlTool.getQueryString(MapTool.toMap(Arrays.asList(keys), key -> get(key)));
 	}

@@ -29,6 +29,7 @@ import com.eriklievaart.toolkit.reflect.api.method.PropertyWrapper;
 public class RequestContext {
 	public static final String EXCEPTION_ATTRIBUTE = "com.eriklievaart.jl.core.api.exception";
 
+	private Boolean useErrorPage;
 	private ResponseBuilder responseBuilder;
 	private HttpServletResponse response;
 	private HttpServletRequest request;
@@ -120,5 +121,16 @@ public class RequestContext {
 
 	public Optional<Exception> getException() {
 		return OptionalTool.notNull((Exception) request.getAttribute(EXCEPTION_ATTRIBUTE));
+	}
+
+	/**
+	 * Annotate controller with {@link UseErrorPage} to prevent ajax calls from redirecting to error page
+	 */
+	public void setUseErrorPage(boolean value) {
+		useErrorPage = value;
+	}
+
+	public Boolean isUsingErrorPage() {
+		return useErrorPage;
 	}
 }

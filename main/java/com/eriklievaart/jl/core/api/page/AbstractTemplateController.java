@@ -24,6 +24,10 @@ public abstract class AbstractTemplateController implements PageController {
 
 	public abstract void invoke() throws Exception;
 
+	public void setStatusCode(int value) {
+		response.setStatusCode(value);
+	}
+
 	public boolean isTemplateSet() {
 		return Str.notBlank(template);
 	}
